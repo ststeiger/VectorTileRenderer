@@ -108,14 +108,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VectorTileRenderer\VectorTileRenderer.csproj">
-      <Project>{46423799-3b17-4e62-b0ab-5c5a13ee9eb2}</Project>
-      <Name>VectorTileRenderer</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="FromMbTiles_Correct.png" />
     <Content Include="FromMbTiles_NetStandard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VectorTileRenderer2\VectorTileRenderer2.csproj">
+      <Project>{1c299ba7-956e-4a8f-8bba-a5215ca0c9fa}</Project>
+      <Name>VectorTileRenderer2</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\SkiaSharp.2.80.3\build\net462\SkiaSharp.targets" Condition="Exists('..\packages\SkiaSharp.2.80.3\build\net462\SkiaSharp.targets')" />

@@ -170,11 +170,14 @@ namespace VectorTileRenderer
 
 
             ClipperLib.ClipperBase cb = null;
-            
 
-            c.AddPolygon(polygon, PolyType.ptSubject);
 
-            c.AddPolygon(clipRectanglePath, PolyType.ptClip);
+            // c.AddPolygon(polygon, PolyType.ptSubject);
+            c.AddPath(polygon, PolyType.ptSubject, true);
+
+
+            // c.AddPolygon(clipRectanglePath, PolyType.ptClip);
+            c.AddPath(clipRectanglePath, PolyType.ptClip, true);
 
             List<List<IntPoint>> solution = new List<List<IntPoint>>();
 
