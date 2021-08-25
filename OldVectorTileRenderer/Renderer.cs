@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-// using System.Windows;
-// using System.Windows.Media.Imaging;
+using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace VectorTileRenderer
 {
@@ -50,11 +50,11 @@ namespace VectorTileRenderer
                 }
             }
 
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(bundle);
-            string hash = Utils.Sha256(json).Substring(0, 12); // get 12 digits to avoid fs length issues
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(bundle);
+            var hash = Utils.Sha256(json).Substring(0, 12); // get 12 digits to avoid fs length issues
 
-            string fileName = x + "x" + y + "-" + zoom + "-" + hash + ".png";
-            string path = Path.Combine(cachePath, fileName);
+            var fileName = x + "x" + y + "-" + zoom + "-" + hash + ".png";
+            var path = Path.Combine(cachePath, fileName);
             
             lock(cacheLock)
             {
@@ -64,7 +64,7 @@ namespace VectorTileRenderer
                 }
             }
 
-            BitmapSource bitmap = await Render(style, canvas, x, y, zoom, sizeX, sizeY, scale);
+            var bitmap = await Render(style, canvas, x, y, zoom, sizeX, sizeY, scale);
 
             if(bitmap != null)
             {
@@ -77,15 +77,15 @@ namespace VectorTileRenderer
                             return loadBitmap(path);
                         }
 
-                        using (FileStream fileStream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.ReadWrite))
+                        using (var fileStream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.ReadWrite))
                         {
                             BitmapEncoder encoder = new PngBitmapEncoder();
-                            encoder.Frames.Add(BitmapFrame.Create(bitmap.WindowsShit));
+                            encoder.Frames.Add(BitmapFrame.Create(bitmap));
                             encoder.Save(fileStream);
                         }
                     }
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
                     return null;
                 }
@@ -96,9 +96,9 @@ namespace VectorTileRenderer
 
         static BitmapSource loadBitmap(string path)
         {
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                BitmapImage fsBitmap = new BitmapImage();
+                var fsBitmap = new BitmapImage();
                 fsBitmap.BeginInit();
                 fsBitmap.StreamSource = stream;
                 fsBitmap.CacheOption = BitmapCacheOption.OnLoad;
@@ -119,8 +119,8 @@ namespace VectorTileRenderer
 
             if (sizeX < 1024)
             {
-                double ratio = 1024 / sizeX;
-                double zoomDelta = Math.Log(ratio, 2);
+                var ratio = 1024 / sizeX;
+                var zoomDelta = Math.Log(ratio, 2);
 
                 actualZoom = zoom - zoomDelta;
             }
@@ -129,12 +129,12 @@ namespace VectorTileRenderer
             sizeY *= scale;
             
             canvas.StartDrawing(sizeX, sizeY);
-
+            
             // TODO refactor tuples to struct
-            List<VisualLayer> visualLayers = new List<VisualLayer>();
+            var visualLayers = new List<VisualLayer>();
 
             // TODO refactor this messy block
-            foreach (Layer layer in style.Layers)
+            foreach (var layer in style.Layers)
             {
                 if (layer.Source != null)
                 {
@@ -144,7 +144,7 @@ namespace VectorTileRenderer
                         {
                             if (layer.Source.Provider is Sources.IVectorTileSource)
                             {
-                                VectorTile tile = await (layer.Source.Provider as Sources.IVectorTileSource).GetVectorTile(x, y, (int)zoom);
+                                var tile = await (layer.Source.Provider as Sources.IVectorTileSource).GetVectorTile(x, y, (int)zoom);
 
                                 if (tile == null)
                                 {
@@ -164,22 +164,22 @@ namespace VectorTileRenderer
                                 vectorTileCache[layer.Source] = tile;
 
                                 // normalize the points from 0 to size
-                                foreach (VectorTileLayer vectorLayer in tile.Layers)
+                                foreach (var vectorLayer in tile.Layers)
                                 {
-                                    foreach (VectorTileFeature feature in vectorLayer.Features)
+                                    foreach (var feature in vectorLayer.Features)
                                     {
-                                        foreach (List<Point> geometry in feature.Geometry)
+                                        foreach (var geometry in feature.Geometry)
                                         {
                                             for (int i = 0; i < geometry.Count; i++)
                                             {
-                                                Point point = geometry[i];
+                                                var point = geometry[i];
                                                 geometry[i] = new Point(point.X / feature.Extent * sizeX, point.Y / feature.Extent * sizeY);
                                             }
                                         }
                                     }
                                 }
 
-                                foreach (VectorTileLayer tileLayer in tile.Layers)
+                                foreach (var tileLayer in tile.Layers)
                                 {
                                     if (!categorizedLayers.ContainsKey(tileLayer.Name))
                                     {
@@ -198,7 +198,7 @@ namespace VectorTileRenderer
                             {
                                 if (layer.Source.Provider is Sources.ITileSource)
                                 {
-                                    Stream tile = await (layer.Source.Provider as Sources.ITileSource).GetTile(x, y, (int)zoom);
+                                    var tile = await (layer.Source.Provider as Sources.ITileSource).GetTile(x, y, (int)zoom);
 
                                     if (tile == null)
                                     {
@@ -231,10 +231,10 @@ namespace VectorTileRenderer
 
                         foreach (VectorTileLayer tileLayer in tileLayers)
                         {
-                            foreach (VectorTileFeature feature in tileLayer.Features)
+                            foreach (var feature in tileLayer.Features)
                             {
-                                //List<List<Point>> geometry = localizeGeometry(feature.Geometry, sizeX, sizeY, feature.Extent);
-                                Dictionary<string, object> attributes = new Dictionary<string, object>(feature.Attributes);
+                                //var geometry = localizeGeometry(feature.Geometry, sizeX, sizeY, feature.Extent);
+                                var attributes = new Dictionary<string, object>(feature.Attributes);
 
                                 attributes["$type"] = feature.GeometryType;
                                 attributes["$id"] = layer.ID;
@@ -265,7 +265,7 @@ namespace VectorTileRenderer
                 else if (layer.Type == "background")
                 {
                     Brush[] brushes = style.GetStyleByType("background", actualZoom, scale);
-                    foreach(Brush brush in brushes)
+                    foreach(var brush in brushes)
                     {
                         canvas.DrawBackground(brush);
                     }
@@ -273,15 +273,15 @@ namespace VectorTileRenderer
             }
 
             // defered rendering to preserve text drawing order
-            foreach (VisualLayer layer in visualLayers.OrderBy(item => item.Brush.ZIndex))
+            foreach (var layer in visualLayers.OrderBy(item => item.Brush.ZIndex))
             {
                 if(layer.Type == VisualLayerType.Vector)
                 {
-                    VectorTileFeature feature = layer.VectorTileFeature;
-                    List<List<Point>> geometry = layer.Geometry;
-                    Brush brush = layer.Brush;
+                    var feature = layer.VectorTileFeature;
+                    var geometry = layer.Geometry;
+                    var brush = layer.Brush;
 
-                    Dictionary<string, object> attributesDict = feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
+                    var attributesDict = feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
 
                     if (!brush.Paint.Visibility)
                     {
@@ -290,21 +290,21 @@ namespace VectorTileRenderer
 
                     if (feature.GeometryType == "Point")
                     {
-                        foreach (List<Point> point in geometry)
+                        foreach (var point in geometry)
                         {
                             canvas.DrawPoint(point.First(), brush);
                         }
                     }
                     else if (feature.GeometryType == "LineString")
                     {
-                        foreach (List<Point> line in geometry)
+                        foreach (var line in geometry)
                         {
                             canvas.DrawLineString(line, brush);
                         }
                     }
                     else if (feature.GeometryType == "Polygon")
                     {
-                        foreach (List<Point> polygon in geometry)
+                        foreach (var polygon in geometry)
                         {
                             canvas.DrawPolygon(polygon, brush);
                         }
@@ -321,15 +321,15 @@ namespace VectorTileRenderer
                 }
             }
 
-            foreach (VisualLayer layer in visualLayers.OrderBy(item => item.Brush.ZIndex).Reverse())
+            foreach (var layer in visualLayers.OrderBy(item => item.Brush.ZIndex).Reverse())
             {
                 if (layer.Type == VisualLayerType.Vector)
                 {
-                    VectorTileFeature feature = layer.VectorTileFeature;
-                    List<List<Point>> geometry = layer.Geometry;
-                    Brush brush = layer.Brush;
+                    var feature = layer.VectorTileFeature;
+                    var geometry = layer.Geometry;
+                    var brush = layer.Brush;
 
-                    Dictionary<string, object> attributesDict = feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
+                    var attributesDict = feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
 
                     if (!brush.Paint.Visibility)
                     {
@@ -338,7 +338,7 @@ namespace VectorTileRenderer
 
                     if (feature.GeometryType == "Point")
                     {
-                        foreach (List<Point> point in geometry)
+                        foreach (var point in geometry)
                         {
                             if (brush.Text != null)
                             {
@@ -348,7 +348,7 @@ namespace VectorTileRenderer
                     }
                     else if (feature.GeometryType == "LineString")
                     {
-                        foreach (List<Point> line in geometry)
+                        foreach (var line in geometry)
                         {
                             if (brush.Text != null)
                             {
@@ -370,8 +370,8 @@ namespace VectorTileRenderer
                 {
                     Point newPoint = new Point(0, 0);
 
-                    double x = Utils.ConvertRange(point.X, 0, extent, 0, sizeX, false);
-                    double y = Utils.ConvertRange(point.Y, 0, extent, 0, sizeY, false);
+                    var x = Utils.ConvertRange(point.X, 0, extent, 0, sizeX, false);
+                    var y = Utils.ConvertRange(point.Y, 0, extent, 0, sizeY, false);
 
                     newPoint.X = x;
                     newPoint.Y = y;

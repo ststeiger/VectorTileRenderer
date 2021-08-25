@@ -1,4 +1,6 @@
 ﻿
+using VectorTileRenderer;
+
 namespace TestRenderer
 {
 
@@ -77,12 +79,12 @@ namespace TestRenderer
             // render it on a skia canvas
             int zoom = 13;
             VectorTileRenderer.SkiaCanvas canvas = new VectorTileRenderer.SkiaCanvas();
-            System.Windows.Media.Imaging.BitmapSource bitmap = await VectorTileRenderer.Renderer.Render(style, canvas, 0, 0, zoom, 512, 512, 1);
+            BitmapSource bitmap = await VectorTileRenderer.Renderer.Render(style, canvas, 0, 0, zoom, 512, 512, 1);
             
-            using (System.Drawing.Bitmap bmp = BitmapFromSource2(bitmap))
-            {
-                bmp.Save(@"D:\TileFromPBF.png", System.Drawing.Imaging.ImageFormat.Png);
-            } // End Using bmp 
+            //using (System.Drawing.Bitmap bmp = BitmapFromSource2(bitmap))
+            //{
+            //    bmp.Save(@"D:\TileFromPBF.png", System.Drawing.Imaging.ImageFormat.Png);
+            //} // End Using bmp 
 
         } // End Task FromPBF 
 
@@ -141,12 +143,12 @@ namespace TestRenderer
 
                 // render it on a skia canvas
                 VectorTileRenderer.SkiaCanvas canvas = new VectorTileRenderer.SkiaCanvas();
-                System.Windows.Media.Imaging.BitmapSource bitmap = await VectorTileRenderer.Renderer.Render(style, canvas, x, y, zoom, 512, 512, 1);
+                BitmapSource bitmap = await VectorTileRenderer.Renderer.Render(style, canvas, x, y, zoom, 512, 512, 1);
 
-                using (System.Drawing.Bitmap bmp = BitmapFromSource2(bitmap))
-                {
-                    bmp.Save(@"D:\TileFromMbTiles.png", System.Drawing.Imaging.ImageFormat.Png);
-                } // End Using bmp 
+                //using (System.Drawing.Bitmap bmp = BitmapFromSource2(bitmap))
+                //{
+                //    bmp.Save(@"D:\TileFromMbTiles.png", System.Drawing.Imaging.ImageFormat.Png);
+                //} // End Using bmp 
 
             }
             catch (System.Exception ex)
@@ -168,6 +170,7 @@ namespace TestRenderer
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
 #endif
+
             TestSkia.DrawWithoutSurface();
 
             System.Threading.Tasks.Task renderTask = System.Threading.Tasks.Task.Run(

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{46423799-3B17-4E62-B0AB-5C5A13EE9EB2}</ProjectGuid>
+    <ProjectGuid>{35B760AF-7972-4669-83B6-9385AB9F8897}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VectorTileRenderer</RootNamespace>
@@ -143,12 +143,6 @@
   <ItemGroup>
     <Compile Include="GlobalMercator.cs" />
     <Compile Include="ICanvas.cs" />
-    <Compile Include="SimpleReplacements\Int32Rect.cs" />
-    <Compile Include="SimpleReplacements\Colors.cs" />
-    <Compile Include="SimpleReplacements\Enums.cs" />
-    <Compile Include="SimpleReplacements\Point.cs" />
-    <Compile Include="SimpleReplacements\Rect.cs" />
-    <Compile Include="SimpleReplacements\Size.cs" />
     <Compile Include="SkiaGL.cs" />
     <Compile Include="Sources\RasterTileSource.cs" />
     <Compile Include="Sources\ITileSource.cs" />
@@ -162,7 +156,6 @@
     <Compile Include="Style.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VectorTile.cs" />
-    <Compile Include="WindowsReplacements.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
