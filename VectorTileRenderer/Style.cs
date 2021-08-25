@@ -135,7 +135,116 @@ namespace VectorTileRenderer
 
         public Style(string path, double scale = 1)
         {
-            var json = System.IO.File.ReadAllText(path);
+            string json = System.IO.File.ReadAllText(path);
+
+
+
+            JObject jObject = JObject.Parse(json);
+
+
+            JProperty srcs = jObject.Property("sources");
+            if (srcs != null && srcs.Type == JTokenType.Property && srcs.Value.Type == JTokenType.Object)
+            {
+                JObject myobs = (JObject)srcs.Value;
+
+                foreach (JProperty jSource in myobs.Properties())
+                {
+                    Source source = new Source();
+
+                    IDictionary<string, JToken> sourceDict = jSource.Value as JObject;
+
+                    source.Name = jSource.Name;
+
+                    if (sourceDict.ContainsKey("url"))
+                    {
+                        source.URL = plainifyJson(sourceDict["url"]) as string;
+                    }
+
+                    if (sourceDict.ContainsKey("type"))
+                    {
+                        source.Type = plainifyJson(sourceDict["type"]) as string;
+                    }
+
+                    Sources[jSource.Name] = source;
+                }
+
+
+            }
+
+
+
+            int i = 0;
+
+            JProperty layers = jObject.Property("layers");
+
+            if (layers != null && layers.Value != null && layers.Value.Type == JTokenType.Array)
+            {
+                JArray arr = (JArray)(JToken)layers.Value;
+
+                foreach (JObject jLayer in arr)
+                {
+                    Layer layer = new Layer();
+                    layer.Index = i;
+
+                    IDictionary<string, JToken> layerDict = jLayer;
+
+
+                    if (layerDict.ContainsKey("minzoom"))
+                    {
+                        layer.MinZoom = Convert.ToDouble(plainifyJson(layerDict["minzoom"]));
+                    }
+
+                    if (layerDict.ContainsKey("maxzoom"))
+                    {
+                        layer.MaxZoom = Convert.ToDouble(plainifyJson(layerDict["maxzoom"]));
+                    }
+
+                    if (layerDict.ContainsKey("id"))
+                    {
+                        layer.ID = plainifyJson(layerDict["id"]) as string;
+                    }
+
+                    if (layerDict.ContainsKey("type"))
+                    {
+                        layer.Type = plainifyJson(layerDict["type"]) as string;
+                    }
+
+                    if (layerDict.ContainsKey("source"))
+                    {
+                        layer.SourceName = plainifyJson(layerDict["source"]) as string;
+                        layer.Source = Sources[layer.SourceName];
+                    }
+
+                    if (layerDict.ContainsKey("source-layer"))
+                    {
+                        layer.SourceLayer = plainifyJson(layerDict["source-layer"]) as string;
+                    }
+
+                    if (layerDict.ContainsKey("paint"))
+                    {
+                        layer.Paint = plainifyJson(layerDict["paint"]) as Dictionary<string, object>;
+                    }
+
+                    if (layerDict.ContainsKey("layout"))
+                    {
+                        layer.Layout = plainifyJson(layerDict["layout"]) as Dictionary<string, object>;
+                    }
+
+                    if (layerDict.ContainsKey("filter"))
+                    {
+                        JArray filterArray = layerDict["filter"] as JArray;
+                        layer.Filter = plainifyJson(filterArray) as object[];
+                    }
+
+                    Layers.Add(layer);
+
+                    i++;
+                }
+
+            }
+
+
+            /*
             dynamic jObject = JObject.Parse(json);
 
             List<string> fontNames = new List<string>();
@@ -220,6 +329,7 @@ namespace VectorTileRenderer
 
                 i++;
             }
+            */
 
             Hash = Utils.Sha256(json);
         }

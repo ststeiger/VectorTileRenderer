@@ -138,10 +138,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VectorTileRenderer\VectorTileRenderer.csproj">
-      <Project>{46423799-3b17-4e62-b0ab-5c5a13ee9eb2}</Project>
-      <Name>VectorTileRenderer</Name>
-      <Private>True</Private>
+    <ProjectReference Include="..\OldVectorTileRenderer\OldVectorTileRenderer.csproj">
+      <Project>{35b760af-7972-4669-83b6-9385ab9f8897}</Project>
+      <Name>OldVectorTileRenderer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

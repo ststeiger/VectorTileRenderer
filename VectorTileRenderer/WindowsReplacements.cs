@@ -1,6 +1,9 @@
 ﻿
-namespace VectorTileRenderer
+namespace VectorTileRenderer111
 {
+
+
+    using VectorTileRenderer;
 
 
     public class FormatConvertedBitmap

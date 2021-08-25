@@ -12,14 +12,17 @@ using System.Text;
 
 namespace VectorTileRenderer
 {
-    public class SkiaCanvas : ICanvas
+    public class SkiaCanvas 
+        : ICanvas
     {
         int width;
         int height;
-        
+
         //////////////////////////
-        WriteableBitmap bitmap;
-        SKSurface surface;
+        // WriteableBitmap bitmap;
+        SKBitmap bitmap;
+
+        // SKSurface surface;
         SKCanvas canvas;
 
         private GRContext grContext;
@@ -40,8 +43,21 @@ namespace VectorTileRenderer
             SKImageInfo info = new SKImageInfo(this.width, this.height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
 
 
-            bitmap = new WriteableBitmap(this.width, this.height, 96, 96, PixelFormats.Pbgra32, null);
-            bitmap.Lock();
+            // bitmap = new WriteableBitmap(this.width, this.height, 96, 96, PixelFormats.Pbgra32, null);
+            // bitmap.Lock();
+
+
+            this.bitmap = new SKBitmap(info);
+
+
+            // var bmap = new System.Windows.Media.Imaging.WriteableBitmap(this.width, this.height, 96, 96, System.Windows.Media.PixelFormats.Pbgra32, null);
+            // public static SKSurface Create(SKImageInfo info, IntPtr pixels, int rowBytes);
+            // SKSurface.Create(info, bmap.BackBuffer, bmap.BackBufferStride);
+
+
+
+
+
 
 
             // GRGlInterface glInterface = GRGlInterface.CreateNativeGlInterface();
@@ -52,9 +68,16 @@ namespace VectorTileRenderer
             //renderTarget.Height = this.height;
 
 
-            surface = SKSurface.Create(info, bitmap.BackBuffer, bitmap.BackBufferStride);
+
+
+
+
+            // surface = SKSurface.Create(info, bitmap.BackBuffer, bitmap.BackBufferStride);
             //surface = SKSurface.Create(grContext, renderTarget);
-            canvas = surface.Canvas;
+            // canvas = surface.Canvas;
+
+            canvas = new SKCanvas(this.bitmap);
+
 
             double padding = -5;
             clipRectangle = new Rect(padding, padding, this.width - padding * 2, this.height - padding * 2);
@@ -71,6 +94,7 @@ namespace VectorTileRenderer
             canvas.Clear(new SKColor(style.Paint.BackgroundColor.R, style.Paint.BackgroundColor.G, style.Paint.BackgroundColor.B, style.Paint.BackgroundColor.A));
         }
 
+        
         SKStrokeCap convertCap(PenLineCap cap)
         {
             if (cap == PenLineCap.Flat)
@@ -84,6 +108,8 @@ namespace VectorTileRenderer
 
             return SKStrokeCap.Square;
         }
+        
+
 
         //private double getAngle(double x1, double y1, double x2, double y2)
         //{
@@ -200,6 +226,10 @@ namespace VectorTileRenderer
             {
                 return;
             }
+
+
+            if (style.Paint.LineColor == null)
+                return;
 
             SKPaint fillPaint = new SKPaint
             {
@@ -540,10 +570,11 @@ namespace VectorTileRenderer
                 return;
             }
 
-            if(style.Paint.FillColor.R == 15)
-            {
+            // if(style.Paint.FillColor.R == 15) { }
 
-            }
+            if (style.Paint.FillColor == null)
+                return;
+
 
             SKPaint fillPaint = new SKPaint
             {
@@ -557,6 +588,7 @@ namespace VectorTileRenderer
         }
 
 
+        /*
         static SKImage toSKImage(BitmapSource bitmap)
         {
             // TODO: maybe keep the same color types where we can, instead of just going to the platform default
@@ -569,6 +601,7 @@ namespace VectorTileRenderer
             return image;
         }
 
+        
         static void toSKPixmap(BitmapSource bitmap, SKPixmap pixmap)
         {
             // TODO: maybe keep the same color types where we can, instead of just going to the platform default
@@ -589,38 +622,73 @@ namespace VectorTileRenderer
                 }
             }
         }
+        */
+
 
         public void DrawImage(Stream imageStream, Brush style)
         {
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.StreamSource = imageStream;
-            bitmapImage.DecodePixelWidth = this.width;
-            bitmapImage.DecodePixelHeight = this.height;
-            bitmapImage.EndInit();
+            //BitmapImage bitmapImage = new BitmapImage();
+            //bitmapImage.BeginInit();
+            //bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            //bitmapImage.StreamSource = imageStream;
+            //bitmapImage.DecodePixelWidth = this.width;
+            //bitmapImage.DecodePixelHeight = this.height;
+            //bitmapImage.EndInit();
 
-            SKImage image = toSKImage(bitmapImage);
+            // SKImage image = toSKImage(bitmapImage);
+
+            // SKBitmap image = SKBitmap.Decode(imageStream);
+            // canvas.DrawBitmap(image, new SKPoint(0, 0));
+
+
+            // SKImage.FromEncodedData
+            // SKImage.FromBitmap()
+
+            // SKManagedStream sk = new SKManagedStream(imageStream);
+            // SKData sd = SKData.CreateCopy(sk.Handle, (ulong)sk.Length);
+            SKData sd = SKData.Create(imageStream);
+            using (SKImage image = SKImage.FromEncodedData(sd))
+            {
+                canvas.DrawImage(image, new SKPoint(0, 0));
+            }
             
-            canvas.DrawImage(image, new SKPoint(0, 0));
         }
+
 
         public void DrawUnknown(List<List<Point>> geometry, Brush style)
         {
 
         }
 
-        public BitmapSource FinishDrawing()
+
+        public byte[] FinishDrawing()
         {
             //surface.Canvas.Flush();
             //grContext.
 
             // AddDirtyRect: Specifies the area of the bitmap that changed.
-            bitmap.AddDirtyRect(new Int32Rect(0, 0, this.width, this.height));
-            bitmap.Unlock();
-            bitmap.Freeze();
+            // bitmap.AddDirtyRect(new Int32Rect(0, 0, this.width, this.height));
+            // bitmap.Unlock();
+            // bitmap.Freeze();
 
-            return bitmap;
+            // return bitmap;
+
+            byte[] pngBytes = null;
+
+            using (SKBitmap bmp = this.bitmap)
+            {
+                using (SKImage skImg = SKImage.FromBitmap(this.bitmap))
+                {
+                    using (SKData pngData = skImg.Encode(SKEncodedImageFormat.Png, 100))
+                    {
+                        pngBytes = pngData.ToArray();
+                    }
+
+                } // End Using skImg 
+
+            }
+
+            return pngBytes;
         }
     }
 }
