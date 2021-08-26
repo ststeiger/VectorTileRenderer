@@ -65,9 +65,11 @@ namespace TestRenderer
 
             return files;
         } // End Function GetPlanetFiles 
-
+        
 
         // https://github.com/AliFlux/VectorTileRenderer
+        // https://openmaptiles.org/docs/generate/generate-openmaptiles/
+        // https://github.com/openmaptiles/openmaptiles
         public static async System.Threading.Tasks.Task FromMbTiles(int x, int y, int zoom)
         {
             // D:\Stefan.Steiger\Downloads\2017-07-03_planet_z0_z14.mbtiles
