@@ -8,6 +8,10 @@ namespace RasterTileServer.Controllers
     {
 
 
+        public const string STYLE = "bright-style";
+        public static string CACHE_DIR = GetCacheDir();
+        
+
         public static string GetBasePath()
         {
             // return @"D:\username\Documents\Visual Studio 2017\Projects\VectorTileRenderer";
@@ -21,13 +25,26 @@ namespace RasterTileServer.Controllers
         }
 
 
+        public static string GetCacheDir()
+        {
+            // return @"D:\username\Documents\Visual Studio 2017\Projects\VectorTileRenderer";
+
+            string bd = System.AppDomain.CurrentDomain.BaseDirectory;
+            bd = System.IO.Path.Combine(bd, "..", "..", "..");
+            bd = System.IO.Path.GetFullPath(bd);
+            bd = System.IO.Path.Combine(bd, "Cache", STYLE);
+
+            return bd;
+        }
+
+
 
         public static VectorTileRenderer.Style GetInitialStyle()
         {
             string basePath = GetBasePath();
 
             // load style and fonts
-            string bright = System.IO.Path.Combine(basePath, "styles", "bright-style.json");
+            string bright = System.IO.Path.Combine(basePath, "styles", STYLE + ".json");
             VectorTileRenderer.Style style = new VectorTileRenderer.Style(bright);
             style.FontDirectory = System.IO.Path.Combine(basePath, "styles", "fonts");
 
@@ -67,10 +84,23 @@ namespace RasterTileServer.Controllers
             // byte[] ba = ba = System.Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEWq09/P7Lz1AAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg==");
             // return new System.IO.MemoryStream(ba);
 
+            string fn = "de" // lang.ToLowerInvariant()  
+                + "_" + x.ToString(System.Globalization.CultureInfo.InvariantCulture) 
+                + "_" + y.ToString(System.Globalization.CultureInfo.InvariantCulture) 
+                + "_" + z.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".png";
+
+            fn = System.IO.Path.Combine(CACHE_DIR, fn);
+
+            // Cached  
+            if (System.IO.File.Exists(fn))
+                return System.IO.File.OpenRead(fn);
+
             // render it on a skia canvas
             VectorTileRenderer.SkiaCanvas canvas = new VectorTileRenderer.SkiaCanvas();
 
             byte[] bitmap = await VectorTileRenderer.Renderer.Render(s_style, canvas, x, y, z, 256, 256, 1);
+            System.IO.File.WriteAllBytes(fn, bitmap);
+
             return new System.IO.MemoryStream(bitmap);
         } // End Function GetTileStream 
 

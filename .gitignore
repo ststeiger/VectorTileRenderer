@@ -329,3 +329,4 @@ ASALocalRun/
 .mfractor/
 /packages
 /tile-cache
+/RasterTileServer/Cache/bright-style
