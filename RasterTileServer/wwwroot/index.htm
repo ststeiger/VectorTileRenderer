@@ -1,0 +1,301 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
+
+    <title>WebGL</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="libs/leaflet/leaflet.css" />
+    <script src="libs/leaflet/leaflet.js"></script>
+
+
+    <script>//<![CDATA[
+
+
+
+    //]]>
+    </script>
+
+
+    <script>//<![CDATA[
+
+        // https://stackoverflow.com/questions/1043339/javascript-for-detecting-browser-language-preference
+        function getFirstBrowserLanguage()
+        {
+            var nav = window.navigator,
+                browserLanguagePropertyKeys = ['language', 'browserLanguage', 'systemLanguage', 'userLanguage'],
+                i,
+                language;
+
+            // support for HTML 5.1 "navigator.languages"
+            //if (Array.isArray(nav.languages)) // IE8-trap
+            if (Object.prototype.toString.call(nav.languages) === '[object Array]')
+            {
+                for (i = 0; i < nav.languages.length; i++)
+                {
+                    language = nav.languages[i];
+                    if (language && language.length)
+                    {
+                        return language;
+                    }
+                }
+            }
+
+            // support for other well known properties in browsers
+            for (i = 0; i < browserLanguagePropertyKeys.length; i++)
+            {
+                language = nav[browserLanguagePropertyKeys[i]];
+                if (language && language.length)
+                {
+                    return language;
+                }
+            }
+
+            return null;
+        }
+
+
+        function getBrowserLanguage(dft)
+        {
+            var bl = getFirstBrowserLanguage() || dft,
+                pos = bl.indexOf("-");
+            if (pos !== -1)
+                bl = bl.substr(0, pos);
+
+            return bl;
+        }
+
+
+        function getUserLanguage()
+        {
+            var l = null;
+            // TODO: get login-user prefered language
+
+            return l || getBrowserLanguage("de");
+        }
+
+
+        function IEdetection()
+        {
+            var ua = window.navigator.userAgent;
+
+            var result = {};
+
+            var trident = ua.indexOf('Trident/');
+            if (trident > 0)
+            {
+                // IE 11, return version number
+                result.isIE = true;
+                result.crap = true;
+                result.v = 11;
+            }
+
+            var msie = ua.indexOf('MSIE ');
+            if (msie > 0)
+            {
+                // IE 10 or older, return version number
+
+                result.isIE = true;
+                result.crap = true;
+                result.v = 10;
+
+                var re = new RegExp("MSIE ([0-9]{1,}[\\.0-9]{0,})");
+
+                if (re.exec(ua) !== null)
+                {
+                    result.v = parseFloat(RegExp.$1);
+                }
+
+            }
+
+            var edge = ua.indexOf('Edge/');
+            if (edge > 0)
+            {
+                //Edge (IE 12+), return version number
+                result.isEdge = true;
+                result.crap = true;
+                result.v = parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+            }
+
+            // User uses other browser
+            return result;
+        } // End Function IEdetection
+
+    //]]>
+    </script>
+
+
+    <style type="text/css">/*<![CDATA[*/
+
+        * {
+            cursor: default !important;
+        }
+
+        html, body, #map {
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .leaflet-tooltip-top {
+            margin-top: -19px !important;
+        }
+
+        .leaflet-control-attribution {
+            display: block;
+            white-space: nowrap;
+            #transform: scale(0.9, 0.9) translate(5%, 10%);
+            #transform: scale(0.5, 0.5) translate(50%, 50%);
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+        }
+
+        .leaflet-interactive {
+            cursor: pointer !important;
+        }
+
+
+        .zoomControl {
+            position: absolute;
+            display: block;
+            top: 30px;
+            left: 30px;
+            z-index: 9999;
+            background-color: white;
+            opacity: 0.85;
+            border: 1px solid gray;
+            border-radius: 5mm;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+            .zoomControl .mp {
+                display: table-cell;
+                width: 1cm;
+                height: 1cm;
+                text-align: center;
+                vertical-align: middle;
+                #font: 5mm/1.5 Arial, Helvetica, sans-serif;
+                font-family: "Lucida Console", Monaco, monospace;
+                font-size: 5mm;
+                color: gray;
+            }
+
+                .zoomControl .mp:hover {
+                    background-color: #F0F0F0;
+                }
+
+        /*]]>*/
+    </style>
+
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <div class="zoomControl">
+        <div class="mp" style="border-top-left-radius: 5mm; border-top-right-radius: 5mm;" onclick="map.zoomHome()">&#x2606;</div><div style="clear: both;"></div>
+        <div class="mp" onclick="map.zoomIn()">+</div><div style="clear: both;"></div>
+        <div class="mp" style="border-bottom-left-radius: 5mm; border-bottom-right-radius: 5mm;" onclick="map.zoomOut()">-</div><div style="clear: both;"></div>
+    </div>
+
+    <script type="text/javascript">//<![CDATA[
+
+        var map;
+
+        function bracketDevicePixelRatio()
+        {
+            var brackets = [1, 1.3, 1.5, 2, 2.6, 3],
+                baseRatio = window.devicePixelRatio || 1;
+            for (var i = 0; i < brackets.length; i++)
+            {
+                var scale = brackets[i];
+                if (scale >= baseRatio || (baseRatio - scale) < 0.1)
+                {
+                    return scale;
+                }
+            }
+            return brackets[brackets.length - 1];
+        } // End Function bracketDevicePixelRatio
+
+
+        function initMap()
+        {
+            // Create a map
+            map = L.map('map', { zoomControl: false, minZoom: 2, maxZoom: 22 }).setView([47.317390, 8.520293], 18); // SwissRe Soodring 33, Adliswil
+            map.zoomHome = function () { };
+
+            /*
+            var initialBounds = L.latLngBounds(allCoords);
+
+            map.zoomHome = function (homeView)
+            {
+                map.fitBounds(homeView);
+                if (map.gl) map.gl._update();
+            }.bind(this, initialBounds);
+            */
+
+
+            // https://jsfiddle.net/BC7q4/444/
+            var southWest = new L.LatLng(45.802216, 5.920721);
+            var northEast = new L.LatLng(47.968862, 10.769762);
+            var bounds = new L.LatLngBounds(southWest, northEast);
+
+            // https://stackoverflow.com/questions/17187161/bounding-view-of-a-leaflet-image-map-to-a-landscape-viewport
+            // http://leafletjs.com/reference-1.2.0.html#map-fitbounds
+            var bounds = [[45.802216, 5.920721], [47.968862, 10.769762]];
+            // map.fitBounds(bounds, { padding: [] });
+            map.fitBounds(bounds, null);
+
+            // scale:
+            // Optional scale for the high- resolution screens such as Retina.
+            // Supported scales are 1.3, 1.5, 2, 2.6, 3
+            var scale = bracketDevicePixelRatio();
+            var scalex = (scale === 1) ? '' : ('@' + scale + 'x');
+
+
+
+            var osmUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+            var wikiMediaUrl = "{server}/{style}/{z}/{x}/{y}{scalex}.png?lang={language}";
+
+            osmUrl = "https://localhost:44305/tiles/{x}/{y}/{z}.png?lang={language}&no_cache={no_cache}";
+            osmUrl = "tiles/{x}/{y}/{z}.png?lang={language}&no_cache={no_cache}";
+
+            // Add a map layer
+            L.tileLayer(osmUrl,
+                {
+                    maxZoom: 18
+                    , attribution: '<a target="blank" href="https://www.mediawiki.org/wiki/Maps/Technical_Implementation">Wikimedia maps beta</a> | Map data &copy; <a target="blank" href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+                    , server: "https://maps.wikimedia.org"
+                    , style: "osm-intl" // "osm" // Map style to use.Use "osm-intl" for map with labels, "osm" for map without labels.
+                    , scalex: scalex
+                    , language: getUserLanguage() // fr, it, en
+                    , no_cache: new Date().getTime() 
+                }
+            ).addTo(map);
+
+            map.zoomHome();
+        }
+
+        initMap();
+
+        //]]>
+    </script>
+</body>
+</html>

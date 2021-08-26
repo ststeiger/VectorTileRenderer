@@ -11,11 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRenderer", "TestRendere
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OldVectorTileRenderer", "OldVectorTileRenderer\OldVectorTileRenderer.csproj", "{35B760AF-7972-4669-83B6-9385AB9F8897}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VectorTileRenderer2", "VectorTileRenderer2\VectorTileRenderer2.csproj", "{1C299BA7-956E-4A8F-8BBA-A5215CA0C9FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VectorTileRenderer2", "VectorTileRenderer2\VectorTileRenderer2.csproj", "{1C299BA7-956E-4A8F-8BBA-A5215CA0C9FA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mapbox.VectorTile", "Mapbox.VectorTile\Mapbox.VectorTile.csproj", "{D3885393-7DCC-41E7-B2B4-8FBDD63156D7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMinePortable", "ColorMinePortable\ColorMinePortable.csproj", "{947D9667-2D13-4583-991E-5228DCD94464}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RasterTileServer", "RasterTileServer\RasterTileServer.csproj", "{0C819276-6DDB-49A2-8F39-913D349D49E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{947D9667-2D13-4583-991E-5228DCD94464}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{947D9667-2D13-4583-991E-5228DCD94464}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{947D9667-2D13-4583-991E-5228DCD94464}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C819276-6DDB-49A2-8F39-913D349D49E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C819276-6DDB-49A2-8F39-913D349D49E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C819276-6DDB-49A2-8F39-913D349D49E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C819276-6DDB-49A2-8F39-913D349D49E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
