@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-// using System.Windows;
-// using System.Windows.Media.Imaging;
-
+﻿
 namespace VectorTileRenderer
 {
+
+
     public interface ICanvas
     {
         bool ClipOverflow { get; set; }
@@ -13,20 +11,22 @@ namespace VectorTileRenderer
 
         void DrawBackground(Brush style);
 
-        void DrawLineString(List<Point> geometry, Brush style);
+        void DrawLineString(System.Collections.Generic.List<Point> geometry, Brush style);
 
-        void DrawPolygon(List<Point> geometry, Brush style);
+        void DrawPolygon(System.Collections.Generic.List<Point> geometry, Brush style);
 
         void DrawPoint(Point geometry, Brush style);
 
         void DrawText(Point geometry, Brush style);
 
-        void DrawTextOnPath(List<Point> geometry, Brush style);
+        void DrawTextOnPath(System.Collections.Generic.List<Point> geometry, Brush style);
 
-        void DrawImage(Stream imageStream, Brush style);
+        void DrawImage(System.IO.Stream imageStream, Brush style);
 
-        void DrawUnknown(List<List<Point>> geometry, Brush style);
+        void DrawUnknown(System.Collections.Generic.List<System.Collections.Generic.List<Point>> geometry, Brush style);
 
         byte[] FinishDrawing();
     }
+
+
 }

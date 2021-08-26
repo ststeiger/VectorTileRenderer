@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-// using System.Windows;
-// using System.Windows.Media.Imaging;
-
+﻿
 namespace VectorTileRenderer
 {
+
+    using System.Linq;
+
+
     public class Renderer
     {
         // TODO make it instance based... maybe
-        private static Object cacheLock = new Object();
+        private static object cacheLock = new object();
 
         enum VisualLayerType
         {
@@ -23,17 +20,27 @@ namespace VectorTileRenderer
         {
             public VisualLayerType Type { get; set; }
 
-            public Stream RasterStream { get; set; } = null;
+            public System.IO.Stream RasterStream { get; set; } = null;
 
             public VectorTileFeature VectorTileFeature { get; set; } = null;
 
-            public List<List<Point>> Geometry {get;set;} = null;
+            public System.Collections.Generic.List<System.Collections.Generic.List<Point>> Geometry {get;set;} = null;
 
             public Brush Brush { get; set; } = null;
         }
 
+
         /*
-        public async static Task<BitmapSource> RenderCached(string cachePath, Style style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1)
+        public async static System.Threading.Tasks.Task<BitmapSource> RenderCached(
+            string cachePath, 
+            Style style, 
+            ICanvas canvas, 
+            int x, 
+            int y, 
+            double zoom, 
+            double sizeX = 512, 
+            double sizeY = 512, 
+            double scale = 1)
         {
             var bundle = new
             {
@@ -45,9 +52,9 @@ namespace VectorTileRenderer
 
             lock (cacheLock)
             {
-                if (!Directory.Exists(cachePath))
+                if (!System.IO.Directory.Exists(cachePath))
                 {
-                    Directory.CreateDirectory(cachePath);
+                    System.IO.Directory.CreateDirectory(cachePath);
                 }
             }
 
@@ -55,13 +62,13 @@ namespace VectorTileRenderer
             string hash = Utils.Sha256(json).Substring(0, 12); // get 12 digits to avoid fs length issues
 
             string fileName = x + "x" + y + "-" + zoom + "-" + hash + ".png";
-            string path = Path.Combine(cachePath, fileName);
+            string path = System.IO.Path.Combine(cachePath, fileName);
             
             lock(cacheLock)
             {
-                if (File.Exists(path))
+                if (System.IO.File.Exists(path))
                 {
-                    return loadBitmap(path);
+                    return LoadBitmap(path);
                 }
             }
 
@@ -73,33 +80,34 @@ namespace VectorTileRenderer
                 {
                     lock (cacheLock)
                     {
-                        if (File.Exists(path))
+                        if (System.IO.File.Exists(path))
                         {
-                            return loadBitmap(path);
-                        }
+                            return LoadBitmap(path);
+                        } // End if (System.IO.File.Exists(path)) 
 
-                        using (FileStream fileStream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.ReadWrite))
+                        using (System.IO.FileStream fileStream = new System.IO.FileStream(path, System.IO.FileMode.CreateNew, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite))
                         {
                             BitmapEncoder encoder = new PngBitmapEncoder();
                             encoder.Frames.Add(BitmapFrame.Create(bitmap.WindowsShit));
                             encoder.Save(fileStream);
-                        }
-                    }
+                        } // End Using fileStream 
+
+                    } // End lock (cacheLock) 
                 }
                 catch (System.Exception e)
                 {
                     return null;
                 }
-            }
+            } // End if(bitmap != null) 
 
             return bitmap;
-        }
-        
+        } // End Function RenderCached 
 
 
-        static BitmapSource loadBitmap111(string path)
+
+        private static BitmapSource LoadBitmap(string path)
         {
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (System.IO.FileStream stream = new System.IO.FileStream(path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
             {
                 BitmapImage fsBitmap = new BitmapImage();
                 fsBitmap.BeginInit();
@@ -110,24 +118,37 @@ namespace VectorTileRenderer
 
                 return fsBitmap;
             }
-        }
+        } // End Function LoadBitmap 
         */
 
-        public async static Task<byte[]> Render(Style style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1)
+        public async static System.Threading.Tasks.Task<byte[]> Render(
+            Style style, 
+            ICanvas canvas, 
+            int x, 
+            int y, 
+            double zoom, 
+            double sizeX = 512, 
+            double sizeY = 512, 
+            double scale = 1)
         {
-            Dictionary<Source, Stream> rasterTileCache = new Dictionary<Source, Stream>();
-            Dictionary<Source, VectorTile> vectorTileCache = new Dictionary<Source, VectorTile>();
-            Dictionary<string, List<VectorTileLayer>> categorizedLayers = new Dictionary<string, List<VectorTileLayer>>();
+            System.Collections.Generic.Dictionary<Source, System.IO.Stream> rasterTileCache = 
+                new System.Collections.Generic.Dictionary<Source, System.IO.Stream>();
+
+            System.Collections.Generic.Dictionary<Source, VectorTile> vectorTileCache = 
+                new System.Collections.Generic.Dictionary<Source, VectorTile>();
+
+            System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<VectorTileLayer>> categorizedLayers = 
+                new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<VectorTileLayer>>();
 
             double actualZoom = zoom;
 
             if (sizeX < 1024)
             {
                 double ratio = 1024 / sizeX;
-                double zoomDelta = Math.Log(ratio, 2);
+                double zoomDelta = System.Math.Log(ratio, 2);
 
                 actualZoom = zoom - zoomDelta;
-            }
+            } // End if (sizeX < 1024) 
 
             sizeX *= scale;
             sizeY *= scale;
@@ -135,7 +156,8 @@ namespace VectorTileRenderer
             canvas.StartDrawing(sizeX, sizeY);
 
             // TODO refactor tuples to struct
-            List<VisualLayer> visualLayers = new List<VisualLayer>();
+            System.Collections.Generic.List<VisualLayer> visualLayers = 
+                new System.Collections.Generic.List<VisualLayer>();
 
             // TODO refactor this messy block
             foreach (Layer layer in style.Layers)
@@ -154,7 +176,7 @@ namespace VectorTileRenderer
                                 {
                                     return null;
                                     // throwing exceptions screws up the performance
-                                    throw new FileNotFoundException("Could not load tile : " + x + "," + y + "," + zoom + " of " + layer.SourceName);
+                                    throw new System.IO.FileNotFoundException("Could not load tile : " + x + "," + y + "," + zoom + " of " + layer.SourceName);
                                 }
 
                                 // magic sauce! :p
@@ -172,7 +194,7 @@ namespace VectorTileRenderer
                                 {
                                     foreach (VectorTileFeature feature in vectorLayer.Features)
                                     {
-                                        foreach (List<Point> geometry in feature.Geometry)
+                                        foreach (System.Collections.Generic.List<Point> geometry in feature.Geometry)
                                         {
                                             for (int i = 0; i < geometry.Count; i++)
                                             {
@@ -187,7 +209,7 @@ namespace VectorTileRenderer
                                 {
                                     if (!categorizedLayers.ContainsKey(tileLayer.Name))
                                     {
-                                        categorizedLayers[tileLayer.Name] = new List<VectorTileLayer>();
+                                        categorizedLayers[tileLayer.Name] = new System.Collections.Generic.List<VectorTileLayer>();
                                     }
                                     categorizedLayers[tileLayer.Name].Add(tileLayer);
                                 }
@@ -202,13 +224,13 @@ namespace VectorTileRenderer
                             {
                                 if (layer.Source.Provider is Sources.ITileSource)
                                 {
-                                    Stream tile = await (layer.Source.Provider as Sources.ITileSource).GetTile(x, y, (int)zoom);
+                                    System.IO.Stream tile = await (layer.Source.Provider as Sources.ITileSource).GetTile(x, y, (int)zoom);
 
                                     if (tile == null)
                                     {
                                         return null;
                                         // throwing exceptions screws up the performance
-                                        throw new FileNotFoundException("Could not load tile : " + x + "," + y + "," + zoom + " of " + layer.SourceName);
+                                        throw new System.IO.FileNotFoundException("Could not load tile : " + x + "," + y + "," + zoom + " of " + layer.SourceName);
                                     }
 
                                     rasterTileCache[layer.Source] = tile;
@@ -218,7 +240,7 @@ namespace VectorTileRenderer
 
                         if(rasterTileCache.ContainsKey(layer.Source))
                         {
-                            Brush brush = style.ParseStyle(layer, scale, new Dictionary<string, object>());
+                            Brush brush = style.ParseStyle(layer, scale, new System.Collections.Generic.Dictionary<string, object>());
 
                             visualLayers.Add(new VisualLayer()
                             {
@@ -231,14 +253,15 @@ namespace VectorTileRenderer
 
                     if (categorizedLayers.ContainsKey(layer.SourceLayer))
                     {
-                        List<VectorTileLayer> tileLayers = categorizedLayers[layer.SourceLayer];
+                        System.Collections.Generic.List<VectorTileLayer> tileLayers = categorizedLayers[layer.SourceLayer];
 
                         foreach (VectorTileLayer tileLayer in tileLayers)
                         {
                             foreach (VectorTileFeature feature in tileLayer.Features)
                             {
-                                //List<List<Point>> geometry = localizeGeometry(feature.Geometry, sizeX, sizeY, feature.Extent);
-                                Dictionary<string, object> attributes = new Dictionary<string, object>(feature.Attributes);
+                                //List<List<Point>> geometry = LocalizeGeometry(feature.Geometry, sizeX, sizeY, feature.Extent);
+                                System.Collections.Generic.Dictionary<string, object> attributes = 
+                                    new System.Collections.Generic.Dictionary<string, object>(feature.Attributes);
 
                                 attributes["$type"] = feature.GeometryType;
                                 attributes["$id"] = layer.ID;
@@ -282,10 +305,10 @@ namespace VectorTileRenderer
                 if(layer.Type == VisualLayerType.Vector)
                 {
                     VectorTileFeature feature = layer.VectorTileFeature;
-                    List<List<Point>> geometry = layer.Geometry;
+                    System.Collections.Generic.List<System.Collections.Generic.List<Point>> geometry = layer.Geometry;
                     Brush brush = layer.Brush;
 
-                    Dictionary<string, object> attributesDict = feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
+                    System.Collections.Generic.Dictionary<string, object> attributesDict = feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
 
                     if (!brush.Paint.Visibility)
                     {
@@ -294,21 +317,21 @@ namespace VectorTileRenderer
 
                     if (feature.GeometryType == "Point")
                     {
-                        foreach (List<Point> point in geometry)
+                        foreach (System.Collections.Generic.List<Point> point in geometry)
                         {
                             canvas.DrawPoint(point.First(), brush);
                         }
                     }
                     else if (feature.GeometryType == "LineString")
                     {
-                        foreach (List<Point> line in geometry)
+                        foreach (System.Collections.Generic.List<Point> line in geometry)
                         {
                             canvas.DrawLineString(line, brush);
                         }
                     }
                     else if (feature.GeometryType == "Polygon")
                     {
-                        foreach (List<Point> polygon in geometry)
+                        foreach (System.Collections.Generic.List<Point> polygon in geometry)
                         {
                             canvas.DrawPolygon(polygon, brush);
                         }
@@ -330,19 +353,20 @@ namespace VectorTileRenderer
                 if (layer.Type == VisualLayerType.Vector)
                 {
                     VectorTileFeature feature = layer.VectorTileFeature;
-                    List<List<Point>> geometry = layer.Geometry;
+                    System.Collections.Generic.List<System.Collections.Generic.List<Point>> geometry = layer.Geometry;
                     Brush brush = layer.Brush;
 
-                    Dictionary<string, object> attributesDict = feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
+                    System.Collections.Generic.Dictionary<string, object> attributesDict = 
+                        feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
 
                     if (!brush.Paint.Visibility)
                     {
                         continue;
-                    }
+                    } // End if (!brush.Paint.Visibility) 
 
                     if (feature.GeometryType == "Point")
                     {
-                        foreach (List<Point> point in geometry)
+                        foreach (System.Collections.Generic.List<Point> point in geometry)
                         {
                             if (brush.Text != null)
                             {
@@ -352,21 +376,29 @@ namespace VectorTileRenderer
                     }
                     else if (feature.GeometryType == "LineString")
                     {
-                        foreach (List<Point> line in geometry)
+                        foreach (System.Collections.Generic.List<Point> line in geometry)
                         {
                             if (brush.Text != null)
                             {
                                 canvas.DrawTextOnPath(line, brush);
-                            }
-                        }
-                    }
-                }
-            }
+                            } // End if (brush.Text != null) 
+
+                        } // Next line 
+                    } 
+
+                } // End if (layer.Type == VisualLayerType.Vector) 
+
+            } // Next layer 
 
             return canvas.FinishDrawing();
-        }
+        } // End Task Render 
         
-        private static List<List<Point>> localizeGeometry(List<List<Point>> coordinates, double sizeX, double sizeY, double extent)
+
+        private static System.Collections.Generic.List<System.Collections.Generic.List<Point>> LocalizeGeometry(
+            System.Collections.Generic.List<System.Collections.Generic.List<Point>> coordinates, 
+            double sizeX, 
+            double sizeY, 
+            double extent)
         {
             return coordinates.Select(list =>
             {
@@ -383,8 +415,10 @@ namespace VectorTileRenderer
                     return newPoint;
                 }).ToList();
             }).ToList();
-        }
-        
+        } // End Function LocalizeGeometry 
 
-    }
-}
+
+    } // End Class Renderer 
+
+
+} // End Namespace VectorTileRenderer 

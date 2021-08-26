@@ -1,12 +1,9 @@
 ﻿
-using VectorTileRenderer;
-
-
 namespace TestRenderer
 {
 
 
-    static class Program
+    public static class Program
     {
 
 

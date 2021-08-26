@@ -1,15 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-
-// using System.Windows;
-// using System.Windows.Media;
-
+﻿
 namespace VectorTileRenderer
 {
+
+    using System.Linq;
+
+
     public class Brush
     {
         public int ZIndex { get; set; } = 0;
@@ -20,11 +15,13 @@ namespace VectorTileRenderer
         public Layer _layer { get; set; }
     }
 
+
     public enum SymbolPlacement
     {
         Point,
         Line
     }
+
 
     public enum TextTransform
     {
@@ -32,6 +29,7 @@ namespace VectorTileRenderer
         Uppercase,
         Lowercase
     }
+
 
     public class Paint
     {
@@ -78,6 +76,7 @@ namespace VectorTileRenderer
         public bool Visibility { get; set; } = true; // visibility
     }
 
+
     //class ComparableColor:IComparable
     //{
     //    private long numericColor;
@@ -98,6 +97,7 @@ namespace VectorTileRenderer
     //    }
     //}
 
+
     public class Layer
     {
         public int Index { get; set; } = -1;
@@ -106,12 +106,17 @@ namespace VectorTileRenderer
         public string SourceName { get; set; } = "";
         public Source Source { get; set; } = null;
         public string SourceLayer { get; set; } = "";
-        public Dictionary<string, object> Paint { get; set; } = new Dictionary<string, object>();
-        public Dictionary<string, object> Layout { get; set; } = new Dictionary<string, object>();
+        public System.Collections.Generic.Dictionary<string, object> Paint { get; set; } = 
+            new System.Collections.Generic.Dictionary<string, object>();
+
+        public System.Collections.Generic.Dictionary<string, object> Layout { get; set; } = 
+            new System.Collections.Generic.Dictionary<string, object>();
+
         public object[] Filter { get; set; } = new object[0];
         public double? MinZoom { get; set; } = null;
         public double? MaxZoom { get; set; } = null;
     }
+
 
     public class Source
     {
@@ -121,132 +126,138 @@ namespace VectorTileRenderer
         public Sources.ITileSource Provider { get; set; } = null;
     }
 
+
     public class Style
     {
         public readonly string Hash = "";
-        public List<Layer> Layers = new List<Layer>();
-        public Dictionary<string, Source> Sources = new Dictionary<string, Source>();
-        //double screenScale = 0.2;// = 0.3;
-        //double emToPx = 16;
+        public System.Collections.Generic.List<Layer> Layers = 
+            new System.Collections.Generic.List<Layer>();
 
-        ConcurrentDictionary<string, Brush[]> brushesCache = new ConcurrentDictionary<string, Brush[]>();
+        public System.Collections.Generic.Dictionary<string, Source> Sources = 
+            new System.Collections.Generic.Dictionary<string, Source>();
+
+        // double screenScale = 0.2;// = 0.3;
+        // double emToPx = 16;
+
+        System.Collections.Concurrent.ConcurrentDictionary<string, Brush[]> brushesCache = 
+            new System.Collections.Concurrent.ConcurrentDictionary<string, Brush[]>();
 
         public string FontDirectory { get; set; } = null;
+
 
         public Style(string path, double scale = 1)
         {
             string json = System.IO.File.ReadAllText(path);
-            JObject jObject = JObject.Parse(json);
+            Newtonsoft.Json.Linq.JObject jObject = Newtonsoft.Json.Linq.JObject.Parse(json);
 
 
-            JProperty srcs = jObject.Property("sources");
-            if (srcs != null && srcs.Type == JTokenType.Property && srcs.Value.Type == JTokenType.Object)
+            Newtonsoft.Json.Linq.JProperty srcs = jObject.Property("sources");
+            if (srcs != null && srcs.Type == Newtonsoft.Json.Linq.JTokenType.Property && srcs.Value.Type == Newtonsoft.Json.Linq.JTokenType.Object)
             {
-                JObject myobs = (JObject)srcs.Value;
+                Newtonsoft.Json.Linq.JObject myobs = (Newtonsoft.Json.Linq.JObject)srcs.Value;
 
-                foreach (JProperty jSource in myobs.Properties())
+                foreach (Newtonsoft.Json.Linq.JProperty jSource in myobs.Properties())
                 {
                     Source source = new Source();
-                    
-                    IDictionary<string, JToken> sourceDict = jSource.Value as JObject;
+
+                    System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> sourceDict = 
+                        jSource.Value as Newtonsoft.Json.Linq.JObject;
 
                     source.Name = jSource.Name;
 
                     if (sourceDict.ContainsKey("url"))
                     {
-                        source.URL = plainifyJson(sourceDict["url"]) as string;
+                        source.URL = PlainifyJson(sourceDict["url"]) as string;
                     }
 
                     if (sourceDict.ContainsKey("type"))
                     {
-                        source.Type = plainifyJson(sourceDict["type"]) as string;
+                        source.Type = PlainifyJson(sourceDict["type"]) as string;
                     }
 
                     Sources[jSource.Name] = source;
-                }
+                } // Next jSource 
+
+            } // End if (srcs != null && srcs.Type == JTokenType.Property && srcs.Value.Type == JTokenType.Object) 
 
 
-            }
+            Newtonsoft.Json.Linq.JProperty layers = jObject.Property("layers");
 
-
-
-            int i = 0;
-
-            JProperty layers = jObject.Property("layers");
-
-            if (layers != null && layers.Value != null && layers.Value.Type == JTokenType.Array)
+            if (layers != null && layers.Value != null && layers.Value.Type == Newtonsoft.Json.Linq.JTokenType.Array)
             {
-                JArray arr = (JArray)(JToken)layers.Value;
+                Newtonsoft.Json.Linq.JArray arr = (Newtonsoft.Json.Linq.JArray)(Newtonsoft.Json.Linq.JToken)layers.Value;
 
-                foreach (JObject jLayer in arr)
+                int i = 0;
+                foreach (Newtonsoft.Json.Linq.JObject jLayer in arr)
                 {
                     Layer layer = new Layer();
                      layer.Index = i;
 
-                    IDictionary<string, JToken> layerDict = jLayer;
+                    System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> layerDict = jLayer;
 
 
                     if (layerDict.ContainsKey("minzoom"))
                     {
-                        layer.MinZoom = Convert.ToDouble(plainifyJson(layerDict["minzoom"]));
+                        layer.MinZoom = System.Convert.ToDouble(PlainifyJson(layerDict["minzoom"]));
                     }
 
                      if (layerDict.ContainsKey("maxzoom"))
                     {
-                        layer.MaxZoom = Convert.ToDouble(plainifyJson(layerDict["maxzoom"]));
+                        layer.MaxZoom = System.Convert.ToDouble(PlainifyJson(layerDict["maxzoom"]));
                     }
 
                      if (layerDict.ContainsKey("id"))
                       {
-                         layer.ID = plainifyJson(layerDict["id"]) as string;
+                         layer.ID = PlainifyJson(layerDict["id"]) as string;
                     }
 
                     if (layerDict.ContainsKey("type"))
                     {
-                        layer.Type = plainifyJson(layerDict["type"]) as string;
+                        layer.Type = PlainifyJson(layerDict["type"]) as string;
                     }
 
                     if (layerDict.ContainsKey("source"))
                     {
-                        layer.SourceName = plainifyJson(layerDict["source"]) as string;
+                        layer.SourceName = PlainifyJson(layerDict["source"]) as string;
                         layer.Source = Sources[layer.SourceName];
                     }
 
                     if (layerDict.ContainsKey("source-layer"))
                     {
-                        layer.SourceLayer = plainifyJson(layerDict["source-layer"]) as string;
+                        layer.SourceLayer = PlainifyJson(layerDict["source-layer"]) as string;
                     }
 
                     if (layerDict.ContainsKey("paint"))
                     {
-                        layer.Paint = plainifyJson(layerDict["paint"]) as Dictionary<string, object>;
+                        layer.Paint = PlainifyJson(layerDict["paint"]) as System.Collections.Generic.Dictionary<string, object>;
                     }
 
                     if (layerDict.ContainsKey("layout"))
                     {
-                        layer.Layout = plainifyJson(layerDict["layout"]) as Dictionary<string, object>;
+                        layer.Layout = PlainifyJson(layerDict["layout"]) as System.Collections.Generic.Dictionary<string, object>;
                     }
 
                     if (layerDict.ContainsKey("filter"))
                     {
-                        JArray filterArray = layerDict["filter"] as JArray;
-                        layer.Filter = plainifyJson(filterArray) as object[];
+                        Newtonsoft.Json.Linq.JArray filterArray = layerDict["filter"] as Newtonsoft.Json.Linq.JArray;
+                        layer.Filter = PlainifyJson(filterArray) as object[];
                     }
 
                     Layers.Add(layer);
 
                     i++;
-                }
-            }
+                } // Next jLayer 
+
+            } // End if (layers != null && layers.Value != null && layers.Value.Type == JTokenType.Array) 
 
             Hash = Utils.Sha256(json);
-        }
+        } // End Function Style 
 
 
         public void SetSourceProvider(int index, Sources.ITileSource provider)
         {
             int i = 0;
-            foreach (var pair in Sources)
+            foreach (System.Collections.Generic.KeyValuePair<string, Source> pair in Sources)
             {
                 if (index == i)
                 {
@@ -254,26 +265,30 @@ namespace VectorTileRenderer
                     return;
                 }
                 i++;
-            }
-        }
+            } // Next pair 
+        } // End Function SetSourceProvider 
+
 
         public void SetSourceProvider(string name, Sources.ITileSource provider)
         {
             Sources[name].Provider = provider;
         }
 
-        object plainifyJson(JToken token)
+
+        protected object PlainifyJson(Newtonsoft.Json.Linq.JToken token)
         {
-            if (token.Type == JTokenType.Object)
+            if (token.Type == Newtonsoft.Json.Linq.JTokenType.Object)
             {
-                IDictionary<string, JToken> dict = token as JObject;
-                return dict.Select(pair => new KeyValuePair<string, object>(pair.Key, plainifyJson(pair.Value)))
+                System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> dict = 
+                    token as Newtonsoft.Json.Linq.JObject;
+
+                return dict.Select(pair => new System.Collections.Generic.KeyValuePair<string, object>(pair.Key, PlainifyJson(pair.Value)))
                         .ToDictionary(key => key.Key, value => value.Value);
             }
-            else if (token.Type == JTokenType.Array)
+            else if (token.Type == Newtonsoft.Json.Linq.JTokenType.Array)
             {
-                var array = token as JArray;
-                return array.Select(item => plainifyJson(item)).ToArray();
+                Newtonsoft.Json.Linq.JArray array = token as Newtonsoft.Json.Linq.JArray;
+                return array.Select(item => PlainifyJson(item)).ToArray();
             }
             else
             {
@@ -281,18 +296,19 @@ namespace VectorTileRenderer
             }
 
             return null;
-        }
+        } // End Function PlainifyJson 
+
 
         public Brush[] GetStyleByType(string type, double zoom, double scale = 1)
         {
-            List<Brush> results = new List<Brush>();
+            System.Collections.Generic.List<Brush> results = new System.Collections.Generic.List<Brush>();
 
             int i = 0;
-            foreach (var layer in Layers)
+            foreach (Layer layer in Layers)
             {
                 if (layer.Type == type)
                 {
-                    var attributes = new Dictionary<string, object>();
+                    System.Collections.Generic.Dictionary<string, object> attributes = new System.Collections.Generic.Dictionary<string, object>();
                     attributes["$type"] = "";
                     attributes["$id"] = "";
                     attributes["$zoom"] = zoom;
@@ -300,30 +316,37 @@ namespace VectorTileRenderer
                     results.Add(ParseStyle(layer, scale, attributes));
                 }
                 i++;
-            }
+            } // Next layer 
 
             return results.ToArray();
-        }
+        } // End Function GetStyleByType 
+
 
         public Color GetBackgroundColor(double zoom)
         {
-            var brushes = GetStyleByType("background", zoom, 1);
+            Brush[] brushes = GetStyleByType("background", zoom, 1);
 
-            foreach (var brush in brushes)
+            foreach (Brush brush in brushes)
             {
-                var newColor = Color.FromArgb((byte)Math.Max(0, Math.Min(255, brush.Paint.BackgroundOpacity * brush.Paint.BackgroundColor.A)), brush.Paint.BackgroundColor.R, brush.Paint.BackgroundColor.G, brush.Paint.BackgroundColor.B);
+                Color newColor = Color.FromArgb((byte)System.Math.Max(0, System.Math.Min(255, brush.Paint.BackgroundOpacity * brush.Paint.BackgroundColor.A)), brush.Paint.BackgroundColor.R, brush.Paint.BackgroundColor.G, brush.Paint.BackgroundColor.B);
                 return newColor;
             }
 
             return Colors.White;
-        }
+        } // End Function GetBackgroundColor 
 
-        //public Brush[] GetBrushesCached(double zoom, double scale, string type, string id, Dictionary<string, object> attributes)
+
+        //public Brush[] GetBrushesCached(
+        //    double zoom, 
+        //    double scale, 
+        //    string type, 
+        //    string id, 
+        //    System.Collections.Generic.Dictionary<string, object> attributes)
         //{
         //    // check if the brush is cached or not
         //    // uses a cache key and stores brushes
         //    // 200ms saved on 3x3 512x512px tiles
-        //    StringBuilder builder = new StringBuilder();
+        //    System.Text.StringBuilder builder = new System.Text.StringBuilder();
 
         //    builder.Append(zoom);
         //    builder.Append(',');
@@ -334,59 +357,66 @@ namespace VectorTileRenderer
         //    builder.Append(id);
         //    builder.Append(',');
 
-        //    foreach(var attribute in attributes)
+        //    foreach (System.Collections.Generic.KeyValuePair<string, object> attribute in attributes)
         //    {
         //        builder.Append(attribute.Key);
         //        builder.Append(';');
         //        builder.Append(attribute.Value);
         //        builder.Append('%');
-        //    }
+        //    } // Next attribute 
 
-        //    var key = builder.ToString();
+        //    string key = builder.ToString();
 
-        //    if(brushesCache.ContainsKey(key))
+        //    if (brushesCache.ContainsKey(key))
         //    {
         //        return brushesCache[key];
-        //    }
+        //    } // End if (brushesCache.ContainsKey(key)) 
 
-        //    var brushes = GetBrushes(zoom, scale, type, id, attributes);
+        //    Brush[] brushes = GetBrushes(zoom, scale, type, id, attributes);
         //    brushesCache[key] = brushes;
 
         //    return brushes;
-        //}
+        //} // End Function GetBrushesCached 
 
-        //public Brush[] GetBrushes(double zoom, double scale, string type, string id, Dictionary<string, object> attributes)
+
+        //public Brush[] GetBrushes(
+        //    double zoom, 
+        //    double scale, 
+        //    string type, 
+        //    string id, 
+        //    System.Collections.Generic.Dictionary<string, object> attributes)
         //{
         //    attributes["$type"] = type;
         //    attributes["$id"] = id;
         //    attributes["$zoom"] = zoom;
 
-        //    var layers = findLayers(zoom, attributes);
+        //    Layer[] layers = FindLayers(zoom, attributes);
 
         //    Brush[] result = new Brush[layers.Count()];
 
         //    int i = 0;
-        //    foreach(var layer in layers)
+        //    foreach (Layer layer in layers)
         //    {
         //        result[i] = ParseStyle(layer, scale, attributes);
         //        i++;
-        //    }
+        //    } // Next layer 
 
         //    return result;
-        //}
+        //} // End Function GetBrushesCached 
 
-        public Brush ParseStyle(Layer layer, double scale, Dictionary<string, object> attributes)
+
+        public Brush ParseStyle(Layer layer, double scale, System.Collections.Generic.Dictionary<string, object> attributes)
         {
-            var paintData = layer.Paint;
-            var layoutData = layer.Layout;
-            var index = layer.Index;
+            System.Collections.Generic.Dictionary<string, object> paintData = layer.Paint;
+            System.Collections.Generic.Dictionary<string, object> layoutData = layer.Layout;
+            int index = layer.Index;
 
-            var brush = new Brush();
+            Brush brush = new Brush();
             brush.ZIndex = index;
             brush._layer = layer;
             brush.GlyphsDirectory = this.FontDirectory;
 
-            var paint = new Paint();
+            Paint paint = new Paint();
             brush.Paint = paint;
 
             if (layer.ID == "country_label")
@@ -400,119 +430,119 @@ namespace VectorTileRenderer
 
                 if (paintData.ContainsKey("fill-color"))
                 {
-                    paint.FillColor = parseColor(getValue(paintData["fill-color"], attributes));
+                    paint.FillColor = ParseColor(GetValue(paintData["fill-color"], attributes));
                 }
 
                 if (paintData.ContainsKey("background-color"))
                 {
-                    paint.BackgroundColor = parseColor(getValue(paintData["background-color"], attributes));
+                    paint.BackgroundColor = ParseColor(GetValue(paintData["background-color"], attributes));
                 }
 
                 if (paintData.ContainsKey("text-color"))
                 {
-                    paint.TextColor = parseColor(getValue(paintData["text-color"], attributes));
+                    paint.TextColor = ParseColor(GetValue(paintData["text-color"], attributes));
                 }
 
                 if (paintData.ContainsKey("line-color"))
                 {
-                    paint.LineColor = parseColor(getValue(paintData["line-color"], attributes));
+                    paint.LineColor = ParseColor(GetValue(paintData["line-color"], attributes));
                 }
 
                 // --
 
                 if (paintData.ContainsKey("line-pattern"))
                 {
-                    paint.LinePattern = (string)getValue(paintData["line-pattern"], attributes);
+                    paint.LinePattern = (string)GetValue(paintData["line-pattern"], attributes);
                 }
 
                 if (paintData.ContainsKey("background-pattern"))
                 {
-                    paint.BackgroundPattern = (string)getValue(paintData["background-pattern"], attributes);
+                    paint.BackgroundPattern = (string)GetValue(paintData["background-pattern"], attributes);
                 }
 
                 if (paintData.ContainsKey("fill-pattern"))
                 {
-                    paint.FillPattern = (string)getValue(paintData["fill-pattern"], attributes);
+                    paint.FillPattern = (string)GetValue(paintData["fill-pattern"], attributes);
                 }
 
                 // --
 
                 if (paintData.ContainsKey("text-opacity"))
                 {
-                    paint.TextOpacity = Convert.ToDouble(getValue(paintData["text-opacity"], attributes));
+                    paint.TextOpacity = System.Convert.ToDouble(GetValue(paintData["text-opacity"], attributes));
                 }
 
                 if (paintData.ContainsKey("icon-opacity"))
                 {
-                    paint.IconOpacity = Convert.ToDouble(getValue(paintData["icon-opacity"], attributes));
+                    paint.IconOpacity = System.Convert.ToDouble(GetValue(paintData["icon-opacity"], attributes));
                 }
 
                 if (paintData.ContainsKey("line-opacity"))
                 {
-                    paint.LineOpacity = Convert.ToDouble(getValue(paintData["line-opacity"], attributes));
+                    paint.LineOpacity = System.Convert.ToDouble(GetValue(paintData["line-opacity"], attributes));
                 }
 
                 if (paintData.ContainsKey("fill-opacity"))
                 {
-                    paint.FillOpacity = Convert.ToDouble(getValue(paintData["fill-opacity"], attributes));
+                    paint.FillOpacity = System.Convert.ToDouble(GetValue(paintData["fill-opacity"], attributes));
                 }
 
                 if (paintData.ContainsKey("background-opacity"))
                 {
-                    paint.BackgroundOpacity = Convert.ToDouble(getValue(paintData["background-opacity"], attributes));
+                    paint.BackgroundOpacity = System.Convert.ToDouble(GetValue(paintData["background-opacity"], attributes));
                 }
 
                 // --
 
                 if (paintData.ContainsKey("line-width"))
                 {
-                    paint.LineWidth = Convert.ToDouble(getValue(paintData["line-width"], attributes)) * scale; // * screenScale;
+                    paint.LineWidth = System.Convert.ToDouble(GetValue(paintData["line-width"], attributes)) * scale; // * screenScale;
                 }
 
                 if (paintData.ContainsKey("line-offset"))
                 {
-                    paint.LineOffset = Convert.ToDouble(getValue(paintData["line-offset"], attributes)) * scale;// * screenScale;
+                    paint.LineOffset = System.Convert.ToDouble(GetValue(paintData["line-offset"], attributes)) * scale;// * screenScale;
                 }
 
                 if (paintData.ContainsKey("line-dasharray"))
                 {
-                    var array = (getValue(paintData["line-dasharray"], attributes) as object[]);
-                    paint.LineDashArray = array.Select(item => Convert.ToDouble(item) * scale).ToArray();
+                    object[] array = (GetValue(paintData["line-dasharray"], attributes) as object[]);
+                    paint.LineDashArray = array.Select(item => System.Convert.ToDouble(item) * scale).ToArray();
                 }
 
                 // --
 
                 if (paintData.ContainsKey("text-halo-color"))
                 {
-                    paint.TextStrokeColor = parseColor(getValue(paintData["text-halo-color"], attributes));
+                    paint.TextStrokeColor = ParseColor(GetValue(paintData["text-halo-color"], attributes));
                 }
 
                 if (paintData.ContainsKey("text-halo-width"))
                 {
-                    paint.TextStrokeWidth = Convert.ToDouble(getValue(paintData["text-halo-width"], attributes)) * scale;
+                    paint.TextStrokeWidth = System.Convert.ToDouble(GetValue(paintData["text-halo-width"], attributes)) * scale;
                 }
 
                 if (paintData.ContainsKey("text-halo-blur"))
                 {
-                    paint.TextStrokeBlur = Convert.ToDouble(getValue(paintData["text-halo-blur"], attributes)) * scale;
+                    paint.TextStrokeBlur = System.Convert.ToDouble(GetValue(paintData["text-halo-blur"], attributes)) * scale;
                 }
 
                 // --
 
                 //Console.WriteLine("paint");
                 //Console.WriteLine(paintData.ToString());
-
-                //foreach (var keyName in ((JObject)paintData).Properties().Select(p => p.Name))
+                //foreach (string keyName in ((JObject)paintData).Properties().Select(p => p.Name))
                 //{
                 //    Console.WriteLine(keyName);
                 //}
-            }
+
+            } // End if (paintData != null) 
 
             if (layoutData != null)
             {
                 if (layoutData.ContainsKey("line-cap"))
                 {
-                    var value = (string)getValue(layoutData["line-cap"], attributes);
+                    string value = (string)GetValue(layoutData["line-cap"], attributes);
                     if (value == "butt")
                     {
                         paint.LineCap = PenLineCap.Flat;
@@ -525,59 +555,61 @@ namespace VectorTileRenderer
                     {
                         paint.LineCap = PenLineCap.Square;
                     }
-                }
+                } // End if (layoutData.ContainsKey("line-cap")) 
 
                 if (layoutData.ContainsKey("visibility"))
                 {
-                    paint.Visibility = ((string)getValue(layoutData["visibility"], attributes)) == "visible";
+                    paint.Visibility = ((string)GetValue(layoutData["visibility"], attributes)) == "visible";
                 }
 
                 if (layoutData.ContainsKey("text-field"))
                 {
-                    brush.TextField = (string)getValue(layoutData["text-field"], attributes);
+                    brush.TextField = (string)GetValue(layoutData["text-field"], attributes);
 
                     // TODO check performance implications of Regex.Replace
-                    brush.Text = Regex.Replace(brush.TextField, @"\{([A-Za-z0-9\-\:_]+)\}", (Match m) =>
-                    {
-                        var key = stripBraces(m.Value);
-                        if (attributes.ContainsKey(key))
+                    brush.Text = System.Text.RegularExpressions.Regex.Replace(brush.TextField, @"\{([A-Za-z0-9\-\:_]+)\}",
+                        delegate(System.Text.RegularExpressions.Match m) 
                         {
-                            return attributes[key].ToString();
-                        }
+                            string key = StripBraces(m.Value);
+                            if (attributes.ContainsKey(key))
+                            {
+                                return attributes[key].ToString();
+                            }
 
-                        return "";
-                    }).Trim();
+                            return "";
+                        }
+                    ).Trim();
                 }
 
                 if (layoutData.ContainsKey("text-font"))
                 {
-                    paint.TextFont = ((object[])getValue(layoutData["text-font"], attributes)).Select(item => (string)item).ToArray();
+                    paint.TextFont = ((object[])GetValue(layoutData["text-font"], attributes)).Select(item => (string)item).ToArray();
                 }
 
                 if (layoutData.ContainsKey("text-size"))
                 {
-                    paint.TextSize = Convert.ToDouble(getValue(layoutData["text-size"], attributes)) * scale;
+                    paint.TextSize = System.Convert.ToDouble(GetValue(layoutData["text-size"], attributes)) * scale;
                 }
 
                 if (layoutData.ContainsKey("text-max-width"))
                 {
-                    paint.TextMaxWidth = Convert.ToDouble(getValue(layoutData["text-max-width"], attributes)) * scale;// * screenScale;
+                    paint.TextMaxWidth = System.Convert.ToDouble(GetValue(layoutData["text-max-width"], attributes)) * scale;// * screenScale;
                 }
 
                 if (layoutData.ContainsKey("text-offset"))
                 {
-                    var value = (object[])getValue(layoutData["text-offset"], attributes);
-                    paint.TextOffset = new Point(Convert.ToDouble(value[0]) * scale, Convert.ToDouble(value[1]) * scale);
+                    object[] value = (object[])GetValue(layoutData["text-offset"], attributes);
+                    paint.TextOffset = new Point(System.Convert.ToDouble(value[0]) * scale, System.Convert.ToDouble(value[1]) * scale);
                 }
 
                 if (layoutData.ContainsKey("text-optional"))
                 {
-                    paint.TextOptional = (bool)(getValue(layoutData["text-optional"], attributes));
+                    paint.TextOptional = (bool)(GetValue(layoutData["text-optional"], attributes));
                 }
 
                 if (layoutData.ContainsKey("text-transform"))
                 {
-                    var value = (string)getValue(layoutData["text-transform"], attributes);
+                    string value = (string)GetValue(layoutData["text-transform"], attributes);
                     if (value == "none")
                     {
                         paint.TextTransform = TextTransform.None;
@@ -594,27 +626,28 @@ namespace VectorTileRenderer
 
                 if (layoutData.ContainsKey("icon-size"))
                 {
-                    paint.IconScale = Convert.ToDouble(getValue(layoutData["icon-size"], attributes)) * scale;
+                    paint.IconScale = System.Convert.ToDouble(GetValue(layoutData["icon-size"], attributes)) * scale;
                 }
 
                 if (layoutData.ContainsKey("icon-image"))
                 {
-                    paint.IconImage = (string)getValue(layoutData["icon-image"], attributes);
+                    paint.IconImage = (string)GetValue(layoutData["icon-image"], attributes);
                 }
 
                 //Console.WriteLine("layout");
                 //Console.WriteLine(layoutData.ToString());
-            }
+            } // End if (layoutData != null) 
 
             return brush;
-        }
+        } // End Function ParseStyle 
 
-        private unsafe string stripBraces(string s)
+
+        private string StripBraces(string s)
         {
-            int len = s.Length;
-            char* newChars = stackalloc char[len];
-            char* currentChar = newChars;
+            string ret = null;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
+            int len = s.Length;
             for (int i = 0; i < len; ++i)
             {
                 char c = s[i];
@@ -624,14 +657,21 @@ namespace VectorTileRenderer
                     case '}':
                         continue;
                     default:
-                        *currentChar++ = c;
+                        sb.Append(c);
                         break;
-                }
-            }
-            return new string(newChars, 0, (int)(currentChar - newChars));
-        }
+                } // End Switch 
 
-        private Color parseColor(object iColor)
+            } // Next i 
+
+            ret = sb.ToString();
+            sb.Clear();
+            sb = null;
+
+            return ret;
+        } // End Function StripBraces 
+
+
+        private Color ParseColor(object iColor)
         {
             if (iColor.GetType() == typeof(Color))
             {
@@ -643,7 +683,7 @@ namespace VectorTileRenderer
 
             }
 
-            var colorString = (string)iColor;
+            string colorString = (string)iColor;
 
             if (colorString[0] == '#')
             {
@@ -652,12 +692,12 @@ namespace VectorTileRenderer
 
             if (colorString.StartsWith("hsl("))
             {
-                var segments = colorString.Replace('%', '\0').Split(',', '(', ')');
+                string[] segments = colorString.Replace('%', '\0').Split(',', '(', ')');
                 double h = double.Parse(segments[1]);
                 double s = double.Parse(segments[2]);
                 double l = double.Parse(segments[3]);
 
-                var color = (new ColorMine.ColorSpaces.Hsl()
+                ColorMine.ColorSpaces.IRgb color = (new ColorMine.ColorSpaces.Hsl()
                 {
                     H = h,
                     S = s,
@@ -665,17 +705,17 @@ namespace VectorTileRenderer
                 }).ToRgb();
 
                 return Color.FromRgb((byte)color.R, (byte)color.G, (byte)color.B);
-            }
+            } // End if (colorString.StartsWith("hsl(")) 
 
             if (colorString.StartsWith("hsla("))
             {
-                var segments = colorString.Replace('%', '\0').Split(',', '(', ')');
+                string[] segments = colorString.Replace('%', '\0').Split(',', '(', ')');
                 double h = double.Parse(segments[1]);
                 double s = double.Parse(segments[2]);
                 double l = double.Parse(segments[3]);
                 double a = double.Parse(segments[4]) * 255;
 
-                var color = (new ColorMine.ColorSpaces.Hsl()
+                ColorMine.ColorSpaces.IRgb color = (new ColorMine.ColorSpaces.Hsl()
                 {
                     H = h,
                     S = s,
@@ -683,41 +723,44 @@ namespace VectorTileRenderer
                 }).ToRgb();
 
                 return Color.FromArgb((byte)(a), (byte)color.R, (byte)color.G, (byte)color.B);
-            }
+            } // End if (colorString.StartsWith("hsla(")) 
+
 
             if (colorString.StartsWith("rgba("))
             {
-                var segments = colorString.Replace('%', '\0').Split(',', '(', ')');
+                string[] segments = colorString.Replace('%', '\0').Split(',', '(', ')');
                 double r = double.Parse(segments[1]);
                 double g = double.Parse(segments[2]);
                 double b = double.Parse(segments[3]);
                 double a = double.Parse(segments[4]) * 255;
 
                 return Color.FromArgb((byte)a, (byte)r, (byte)g, (byte)b);
-            }
+            } // End if (colorString.StartsWith("rgba(")) 
 
             if (colorString.StartsWith("rgb("))
             {
-                var segments = colorString.Replace('%', '\0').Split(',', '(', ')');
+                string[] segments = colorString.Replace('%', '\0').Split(',', '(', ')');
                 double r = double.Parse(segments[1]);
                 double g = double.Parse(segments[2]);
                 double b = double.Parse(segments[3]);
 
                 return Color.FromRgb((byte)r, (byte)g, (byte)b);
-            }
+            } // End if (colorString.StartsWith("rgb(")) 
 
             try
             {
                 return (Color)ColorConverter.ConvertFromString(colorString);
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
-                throw new NotImplementedException("Not implemented color format: " + colorString);
+                throw new System.NotImplementedException("Not implemented color format: " + colorString);
             }
-            //return Colors.Violet;
-        }
 
-        public bool ValidateLayer(Layer layer, double zoom, Dictionary<string, object> attributes)
+            // return Colors.Violet;
+        } // End Function ParseColor 
+
+
+        public bool ValidateLayer(Layer layer, double zoom, System.Collections.Generic.Dictionary<string, object> attributes)
         {
 
             if (layer.MinZoom != null)
@@ -736,23 +779,24 @@ namespace VectorTileRenderer
                 }
             }
 
-            if (layer.Filter.Count() > 0)
+            if (layer.Filter.Length > 0)
             {
-                if (!validateUsingFilter(layer.Filter, attributes))
+                if (!ValidateUsingFilter(layer.Filter, attributes))
                 {
                     return false;
                 }
-            }
+            } // End if (layer.Filter.Length > 0) 
 
             return true;
-        }
+        } // End Function ValidateLayer 
 
-        private Layer[] findLayers(double zoom, string layerName, Dictionary<string, object> attributes)
+
+        private Layer[] FindLayers(double zoom, string layerName, System.Collections.Generic.Dictionary<string, object> attributes)
         {
             ////Console.WriteLine(layerName);
-            List<Layer> result = new List<Layer>();
+            System.Collections.Generic.List<Layer> result = new System.Collections.Generic.List<Layer>();
 
-            foreach (var layer in Layers)
+            foreach (Layer layer in Layers)
             {
                 //if (attributes.ContainsKey("class"))
                 //{
@@ -766,9 +810,9 @@ namespace VectorTileRenderer
                 {
                     bool valid = true;
 
-                    if (layer.Filter.Count() > 0)
+                    if (layer.Filter.Length > 0)
                     {
-                        if (!validateUsingFilter(layer.Filter, attributes))
+                        if (!ValidateUsingFilter(layer.Filter, attributes))
                         {
                             valid = false;
                         }
@@ -795,25 +839,28 @@ namespace VectorTileRenderer
                         //return layer;
                         result.Add(layer);
                     }
-                }
-            }
+
+                } // End if (layer.SourceLayer == layerName) 
+
+            } // Next layer 
 
             return result.ToArray();
-        }
+        } // End Function FindLayers 
 
-        private bool validateUsingFilter(object[] filterArray, Dictionary<string, object> attributes)
+
+        private bool ValidateUsingFilter(object[] filterArray, System.Collections.Generic.Dictionary<string, object> attributes)
         {
-            if (filterArray.Count() == 0)
+            if (filterArray.Length == 0)
             {
             }
-            var operation = filterArray[0] as string;
+            string operation = filterArray[0] as string;
             bool result;
 
             if (operation == "all")
             {
                 foreach (object[] subFilter in filterArray.Skip(1))
                 {
-                    if (!validateUsingFilter(subFilter, attributes))
+                    if (!ValidateUsingFilter(subFilter, attributes))
                     {
                         return false;
                     }
@@ -824,7 +871,7 @@ namespace VectorTileRenderer
             {
                 foreach (object[] subFilter in filterArray.Skip(1))
                 {
-                    if (validateUsingFilter(subFilter, attributes))
+                    if (ValidateUsingFilter(subFilter, attributes))
                     {
                         return true;
                     }
@@ -836,7 +883,7 @@ namespace VectorTileRenderer
                 result = false;
                 foreach (object[] subFilter in filterArray.Skip(1))
                 {
-                    if (validateUsingFilter(subFilter, attributes))
+                    if (ValidateUsingFilter(subFilter, attributes))
                     {
                         result = true;
                     }
@@ -853,7 +900,7 @@ namespace VectorTileRenderer
                 case "<":
                 case "<=":
 
-                    var key = (string)filterArray[1];
+                    string key = (string)filterArray[1];
 
                     if (operation == "==")
                     {
@@ -871,19 +918,19 @@ namespace VectorTileRenderer
                         }
                     }
 
-                    if (!(attributes[key] is IComparable))
+                    if (!(attributes[key] is System.IComparable))
                     {
-                        throw new NotImplementedException("Comparing colors probably");
+                        throw new System.NotImplementedException("Comparing colors probably");
                         return false;
                     }
 
-                    var valueA = (IComparable)attributes[key];
-                    var valueB = getValue(filterArray[2], attributes);
+                    System.IComparable valueA = (System.IComparable)attributes[key];
+                    object valueB = GetValue(filterArray[2], attributes);
 
-                    if (isNumber(valueA) && isNumber(valueB))
+                    if (IsNumber(valueA) && IsNumber(valueB))
                     {
-                        valueA = Convert.ToDouble(valueA);
-                        valueB = Convert.ToDouble(valueB);
+                        valueA = System.Convert.ToDouble(valueA);
+                        valueB = System.Convert.ToDouble(valueB);
                     }
 
                     if (key is string)
@@ -892,14 +939,14 @@ namespace VectorTileRenderer
                         {
 
                         }
-                    }
+                    } // End if (key is string) 
 
                     if (valueA.GetType() != valueB.GetType())
                     {
                         return false;
-                    }
+                    } // End if (valueA.GetType() != valueB.GetType()) 
 
-                    var comparison = valueA.CompareTo(valueB);
+                    int comparison = valueA.CompareTo(valueB);
 
                     if (operation == "==")
                     {
@@ -927,7 +974,7 @@ namespace VectorTileRenderer
                     }
 
                     break;
-            }
+            } // End switch (operation) 
 
             if (operation == "has")
             {
@@ -941,90 +988,96 @@ namespace VectorTileRenderer
 
             if (operation == "in")
             {
-                var key = filterArray[1] as string;
+                string key = filterArray[1] as string;
                 if (!attributes.ContainsKey(key))
                 {
                     return false;
                 }
 
-                var value = attributes[key];
+                object value = attributes[key];
 
                 foreach (object item in filterArray.Skip(2))
                 {
-                    if (getValue(item, attributes).Equals(value))
+                    if (GetValue(item, attributes).Equals(value))
                     {
                         return true;
-                    }
-                }
+                    } // End if (GetValue(item, attributes).Equals(value)) 
+
+                } // Next item 
+
                 return false;
-            }
+            } // End if (operation == "in") 
             else if (operation == "!in")
             {
-                var key = filterArray[1] as string;
+                string key = filterArray[1] as string;
                 if (!attributes.ContainsKey(key))
                 {
                     return true;
                 }
 
-                var value = attributes[key];
+                object value = attributes[key];
 
                 foreach (object item in filterArray.Skip(2))
                 {
-                    if (getValue(item, attributes).Equals(value))
+                    if (GetValue(item, attributes).Equals(value))
                     {
                         return false;
-                    }
-                }
+                    } // End if (GetValue(item, attributes).Equals(value)) 
+
+                } // Next item 
+
                 return true;
-            }
-
+            } // End else if (operation == "!in")
+            
             return false;
-        }
+        } // End Function ValidateUsingFilter
 
-        object getValue(object token, Dictionary<string, object> attributes = null)
+
+        protected object GetValue(object token, System.Collections.Generic.Dictionary<string, object> attributes = null)
         {
 
             if (token is string && attributes != null)
             {
                 string value = token as string;
+
                 if (value.Length == 0)
                 {
                     return "";
                 }
+                
                 if (value[0] == '$')
                 {
-                    return getValue(attributes[value]);
+                    return GetValue(attributes[value]);
                 }
-            }
+
+            } // End if (token is string && attributes != null) 
 
             if (token.GetType().IsArray)
             {
-                var array = token as object[];
-                //List<object> result = new List<object>();
+                object[] array = token as object[];
+                System.Collections.Generic.List<object> result = new System.Collections.Generic.List<object>();
 
-                //foreach (object item in array)
-                //{
-                //    var obj = getValue(item, attributes);
-                //    result.Add(obj);
-                //}
+                foreach (object item in array)
+                {
+                    object obj = GetValue(item, attributes);
+                    result.Add(obj);
+                } // Next item 
 
-                //return result.ToArray();
-
-                return array.Select(item => getValue(item, attributes)).ToArray();
+                return result.ToArray();
             }
-            else if (token is Dictionary<string, object>)
+            else if (token is System.Collections.Generic.Dictionary<string, object>)
             {
-                var dict = token as Dictionary<string, object>;
+                System.Collections.Generic.Dictionary<string, object> dict = token as System.Collections.Generic.Dictionary<string, object>;
                 if (dict.ContainsKey("stops"))
                 {
-                    var stops = dict["stops"] as object[];
+                    object[] stops = dict["stops"] as object[];
                     // if it has stops, it's interpolation domain now :P
-                    //var pointStops = stops.Select(item => new Tuple<double, JToken>((item as JArray)[0].Value<double>(), (item as JArray)[1])).ToList();
-                    var pointStops = stops.Select(item => new Tuple<double, object>(Convert.ToDouble((item as object[])[0]), (item as object[])[1])).ToList();
+                    // System.Collections.Generic.List<System.Tuple<double, JToken>> pointStops = stops.Select(item => new System.Tuple<double, JToken>((item as JArray)[0].Value<double>(), (item as JArray)[1])).ToList();
+                    System.Collections.Generic.List<System.Tuple<double, object>> pointStops = stops.Select(item => new System.Tuple<double, object>(System.Convert.ToDouble((item as object[])[0]), (item as object[])[1])).ToList();
 
-                    var zoom = (double)attributes["$zoom"];
-                    var minZoom = pointStops.First().Item1;
-                    var maxZoom = pointStops.Last().Item1;
+                    double zoom = (double)attributes["$zoom"];
+                    double minZoom = pointStops.First().Item1;
+                    double maxZoom = pointStops.Last().Item1;
                     double power = 1;
 
                     if (minZoom == 5 && maxZoom == 10)
@@ -1035,7 +1088,8 @@ namespace VectorTileRenderer
                     double zoomA = minZoom;
                     double zoomB = maxZoom;
                     int zoomAIndex = 0;
-                    int zoomBIndex = pointStops.Count() - 1;
+                    
+                    int zoomBIndex = pointStops.Count - 1;
 
                     // get min max zoom bounds from array
                     if (zoom <= minZoom)
@@ -1053,10 +1107,10 @@ namespace VectorTileRenderer
                     else
                     {
                         // checking for consecutive values
-                        for (int i = 1; i < pointStops.Count(); i++)
+                        for (int i = 1; i < pointStops.Count; i++)
                         {
-                            var previousZoom = pointStops[i - 1].Item1;
-                            var thisZoom = pointStops[i].Item1;
+                            double previousZoom = pointStops[i - 1].Item1;
+                            double thisZoom = pointStops[i].Item1;
 
                             if (zoom >= previousZoom && zoom <= thisZoom)
                             {
@@ -1066,22 +1120,23 @@ namespace VectorTileRenderer
                                 zoomAIndex = i - 1;
                                 zoomBIndex = i;
                                 break;
-                            }
-                        }
-                    }
+                            } // End if (zoom >= previousZoom && zoom <= thisZoom) 
+
+                        } // Next i 
+                    } // End Else 
 
 
                     if (dict.ContainsKey("base"))
                     {
-                        power = Convert.ToDouble(getValue(dict["base"], attributes));
-                    }
+                        power = System.Convert.ToDouble(GetValue(dict["base"], attributes));
+                    } // End if (dict.ContainsKey("base")) 
 
-                    //var referenceElement = (stops[0] as object[])[1];
+                    // object referenceElement = (stops[0] as object[])[1];
 
-                    return interpolateValues(pointStops[zoomAIndex].Item2, pointStops[zoomBIndex].Item2, zoomA, zoomB, zoom, power, false);
+                    return InterpolateValues(pointStops[zoomAIndex].Item2, pointStops[zoomBIndex].Item2, zoomA, zoomB, zoom, power, false);
+                } // End if (dict.ContainsKey("stops")) 
 
-                }
-            }
+            } // End else if (token is System.Collections.Generic.Dictionary<string, object>) 
 
 
             //if (token is string)
@@ -1107,9 +1162,10 @@ namespace VectorTileRenderer
 
 
             return token;
-        }
+        } // End Function GetValue 
 
-        bool isNumber(object value)
+
+        protected bool IsNumber(object value)
         {
             return value is sbyte
                     || value is byte
@@ -1122,28 +1178,29 @@ namespace VectorTileRenderer
                     || value is float
                     || value is double
                     || value is decimal;
-        }
+        } // End Function IsNumber 
 
-        private object interpolateValues(object startValue, object endValue, double zoomA, double zoomB, double zoom, double power, bool clamp = false)
+
+        private object InterpolateValues(object startValue, object endValue, double zoomA, double zoomB, double zoom, double power, bool clamp = false)
         {
             if (startValue is string)
             {
                 // TODO implement color mappings
-                //var minValue = parseColor(startValue.Value<string>());
-                //var maxValue = parseColor(endValue.Value<string>());
+                // Color minValue = ParseColor(startValue.Value<string>());
+                // Color maxValue = ParseColor(endValue.Value<string>());
 
 
-                //var newR = convertRange(zoom, zoomA, zoomB, minValue.ScR, maxValue.ScR, power, false);
-                //var newG = convertRange(zoom, zoomA, zoomB, minValue.ScG, maxValue.ScG, power, false);
-                //var newB = convertRange(zoom, zoomA, zoomB, minValue.ScB, maxValue.ScB, power, false);
-                //var newA = convertRange(zoom, zoomA, zoomB, minValue.ScA, maxValue.ScA, power, false);
+                // double newR = Utils.ConvertRange(zoom, zoomA, zoomB, minValue.ScR, maxValue.ScR, power, false);
+                // double newG = Utils.ConvertRange(zoom, zoomA, zoomB, minValue.ScG, maxValue.ScG, power, false);
+                // double newB = Utils.ConvertRange(zoom, zoomA, zoomB, minValue.ScB, maxValue.ScB, power, false);
+                // double newA = Utils.ConvertRange(zoom, zoomA, zoomB, minValue.ScA, maxValue.ScA, power, false);
 
-                //return Color.FromScRgb((float)newA, (float)newR, (float)newG, (float)newB);
+                // return Color.FromScRgb((float)newA, (float)newR, (float)newG, (float)newB);
 
-                var minValue = startValue as string;
-                var maxValue = endValue as string;
+                string minValue = startValue as string;
+                string maxValue = endValue as string;
 
-                if (Math.Abs(zoomA - zoom) <= Math.Abs(zoomB - zoom))
+                if (System.Math.Abs(zoomA - zoom) <= System.Math.Abs(zoomB - zoom))
                 {
                     return minValue;
                 }
@@ -1155,36 +1212,47 @@ namespace VectorTileRenderer
             }
             else if (startValue.GetType().IsArray)
             {
-                List<object> result = new List<object>();
-                var startArray = startValue as object[];
-                var endArray = endValue as object[];
+                System.Collections.Generic.List<object> result = 
+                    new System.Collections.Generic.List<object>();
 
-                for (int i = 0; i < startArray.Count(); i++)
+                object[] startArray = startValue as object[];
+                object[] endArray = endValue as object[];
+
+                for (int i = 0; i < startArray.Length; i++)
                 {
-                    var minValue = startArray[i];
-                    var maxValue = endArray[i];
+                    object minValue = startArray[i];
+                    object maxValue = endArray[i];
 
-                    var value = interpolateValues(minValue, maxValue, zoomA, zoomB, zoom, power, clamp);
+                    object value = InterpolateValues(minValue, maxValue, zoomA, zoomB, zoom, power, clamp);
 
                     result.Add(value);
                 }
 
                 return result.ToArray();
             }
-            else if (isNumber(startValue))
+            else if (IsNumber(startValue))
             {
-                var minValue = Convert.ToDouble(startValue);
-                var maxValue = Convert.ToDouble(endValue);
+                double minValue = System.Convert.ToDouble(startValue);
+                double maxValue = System.Convert.ToDouble(endValue);
 
-                return interpolateRange(zoom, zoomA, zoomB, minValue, maxValue, power, clamp);
+                return InterpolateRange(zoom, zoomA, zoomB, minValue, maxValue, power, clamp);
             }
             else
             {
-                throw new NotImplementedException("Unimplemented interpolation");
+                throw new System.NotImplementedException("Unimplemented interpolation");
             }
-        }
 
-        private double interpolateRange(double oldValue, double oldMin, double oldMax, double newMin, double newMax, double power, bool clamp = false)
+        } // End Function InterpolateValues 
+
+
+        private double InterpolateRange(
+              double oldValue
+            , double oldMin
+            , double oldMax
+            , double newMin
+            , double newMax
+            , double power
+            , bool clamp = false)
         {
             double difference = oldMax - oldMin;
             double progress = oldValue - oldMin;
@@ -1201,13 +1269,17 @@ namespace VectorTileRenderer
             }
             else
             {
-                normalized = (Math.Pow(power, progress) - 1f) / (Math.Pow(power, difference) - 1f);
+                normalized = (System.Math.Pow(power, progress) - 1f) / (System.Math.Pow(power, difference) - 1f);
             }
 
-            var result = (normalized * (newMax - newMin)) + newMin;
+            double result = (normalized * (newMax - newMin)) + newMin;
 
 
             return result;
-        }
-    }
-}
+        } // End Function InterpolateRange 
+
+
+    } // End Class Style 
+
+
+} // End Namespace 

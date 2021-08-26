@@ -1,72 +1,83 @@
-﻿using System.Collections.Generic;
-// using System.Windows;
-
+﻿
 namespace VectorTileRenderer
 {
+
+
     public class VectorTile
     {
         public bool IsOverZoomed { get; set; } = false;
-        public List<VectorTileLayer> Layers = new List<VectorTileLayer>();
+
+        public System.Collections.Generic.List<VectorTileLayer> Layers = 
+            new System.Collections.Generic.List<VectorTileLayer>();
+
 
         public VectorTile ApplyExtent(Rect extent)
         {
             VectorTile newTile = new VectorTile();
             newTile.IsOverZoomed = this.IsOverZoomed;
             
-            foreach(var layer in Layers)
+            foreach(VectorTileLayer layer in Layers)
             {
-                var vectorLayer = new VectorTileLayer();
+                VectorTileLayer vectorLayer = new VectorTileLayer();
                 vectorLayer.Name = layer.Name;
 
-                foreach (var feature in layer.Features)
+                foreach (VectorTileFeature feature in layer.Features)
                 {
-                    var vectorFeature = new VectorTileFeature();
-                    vectorFeature.Attributes = new Dictionary<string, object>(feature.Attributes);
+                    VectorTileFeature vectorFeature = new VectorTileFeature();
+                    vectorFeature.Attributes = new System.Collections.Generic.Dictionary<string, object>(feature.Attributes);
                     vectorFeature.Extent = feature.Extent;
                     vectorFeature.GeometryType = feature.GeometryType;
 
-                    var vectorGeometry = new List<List<Point>>();
-                    foreach (var geometry in feature.Geometry)
+                    System.Collections.Generic.List<System.Collections.Generic.List<Point>> vectorGeometry = new System.Collections.Generic.List<System.Collections.Generic.List<Point>>();
+                    foreach (System.Collections.Generic.List<Point> geometry in feature.Geometry)
                     {
-                        var vectorPoints = new List<Point>();
+                        System.Collections.Generic.List<Point> vectorPoints = new System.Collections.Generic.List<Point>();
 
-                        foreach (var point in geometry)
+                        foreach (Point point in geometry)
                         {
-
-                            var newX = Utils.ConvertRange(point.X, extent.Left, extent.Right, 0, vectorFeature.Extent);
-                            var newY = Utils.ConvertRange(point.Y, extent.Top, extent.Bottom, 0, vectorFeature.Extent);
+                            double newX = Utils.ConvertRange(point.X, extent.Left, extent.Right, 0, vectorFeature.Extent);
+                            double newY = Utils.ConvertRange(point.Y, extent.Top, extent.Bottom, 0, vectorFeature.Extent);
 
                             vectorPoints.Add(new Point(newX, newY));
-                        }
+                        } // Next point 
 
                         vectorGeometry.Add(vectorPoints);
-                    }
+                    } // Next geometry 
 
                     vectorFeature.Geometry = vectorGeometry;
                     vectorLayer.Features.Add(vectorFeature);
-                }
+                } // Next feature 
 
                 newTile.Layers.Add(vectorLayer);
-            }
+            } // Next layer 
 
             return newTile;
-        }
-    }
+        } // End Function ApplyExtent 
+
+
+    } // End Class VectorTile 
+
 
     public class VectorTileLayer
     {
         public string Name { get; set; }
 
-        public List<VectorTileFeature> Features = new List<VectorTileFeature>();
-    }
+        public System.Collections.Generic.List<VectorTileFeature> Features = 
+            new System.Collections.Generic.List<VectorTileFeature>();
+    } // End Class VectorTileLayer 
+
 
     public class VectorTileFeature
     {
         public double Extent { get; set; }
         public string GeometryType { get; set; }
 
-        public Dictionary<string, object> Attributes = new Dictionary<string, object>();
+        public System.Collections.Generic.Dictionary<string, object> Attributes = 
+            new System.Collections.Generic.Dictionary<string, object>();
 
-        public List<List<Point>> Geometry = new List<List<Point>>();
-    }
-}
+        public System.Collections.Generic.List<System.Collections.Generic.List<Point>> Geometry = 
+            new System.Collections.Generic.List<System.Collections.Generic.List<Point>>();
+    } // End Class VectorTileFeature 
+
+
+} // End Namespace 
