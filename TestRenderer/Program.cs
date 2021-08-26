@@ -63,7 +63,7 @@ namespace TestRenderer
 
                 // set mbtiles as tile provider
                 string mb = @"D:\username\Downloads\2017-07-03_planet_z0_z14.mbtiles";
-                mb = @"C:\Users\User\Downloads\2017-07-03_france_monaco.mbtiles";
+                // mb = @"C:\Users\User\Downloads\2017-07-03_france_monaco.mbtiles";
                 VectorTileRenderer.Sources.MbTilesSource provider = new VectorTileRenderer.Sources.MbTilesSource(mb);
                 style.SetSourceProvider(0, provider);
 
@@ -76,7 +76,7 @@ namespace TestRenderer
                  byte[] bitmap = await VectorTileRenderer.Renderer.Render(style, canvas, x, y, zoom, 512, 512, 1);
 
 
-                System.IO.File.WriteAllBytes(@"E:\TileFromMbTiles.png", bitmap);
+                System.IO.File.WriteAllBytes(@"D:\TileFromMbTiles.png", bitmap);
 
 
                 //using (System.IO.Stream ms = new System.IO.MemoryStream(bitmap))
