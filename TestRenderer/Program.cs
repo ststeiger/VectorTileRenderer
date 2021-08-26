@@ -42,6 +42,31 @@ namespace TestRenderer
         } // End Task FromPBF 
 
 
+        public static string[] GetTileTables()
+        {
+            string[] tiles = new string[15];
+            for (int i = 0; i < tiles.Length; ++i)
+            {
+                tiles[i] = "tiles_" + i.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(2, '0');
+            } // Next i 
+
+            return tiles;
+        } // End Function GetTileTables 
+
+
+        public static string[] GetPlanetFiles(string basePath)
+        {
+            string[] files = new string[15];
+
+            for (int i = 0; i < files.Length; ++i)
+            {
+                files[i] = System.IO.Path.Combine(basePath, "planet_" + i.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(2, '0') + ".db3");
+            } // Next i 
+
+            return files;
+        } // End Function GetPlanetFiles 
+
+
         // https://github.com/AliFlux/VectorTileRenderer
         public static async System.Threading.Tasks.Task FromMbTiles(int x, int y, int zoom)
         {
