@@ -95,10 +95,7 @@ namespace RasterTileServer.Controllers
             if (System.IO.File.Exists(fn))
                 return System.IO.File.OpenRead(fn);
 
-            // render it on a skia canvas
-            VectorTileRenderer.SkiaCanvas canvas = new VectorTileRenderer.SkiaCanvas();
-
-            byte[] bitmap = await VectorTileRenderer.Renderer.Render(s_style, canvas, x, y, z, 256, 256, 1);
+            byte[] bitmap = await VectorTileRenderer.Renderer.Render(s_style, x, y, z, 256, 256, 1);
             System.IO.File.WriteAllBytes(fn, bitmap);
 
             return new System.IO.MemoryStream(bitmap);
