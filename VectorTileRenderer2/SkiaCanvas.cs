@@ -662,14 +662,10 @@ namespace VectorTileRenderer
 
             using (SKBitmap bmp = this.bitmap)
             {
-                using (SKImage skImg = SKImage.FromBitmap(this.bitmap))
+                using (SKData skd = bmp.Encode(SKEncodedImageFormat.Png, 100))
                 {
-                    using (SKData pngData = skImg.Encode(SKEncodedImageFormat.Png, 100))
-                    {
-                        pngBytes = pngData.ToArray();
-                    } // End Using pngData 
-
-                } // End Using skImg 
+                    pngBytes = skd.ToArray();
+                } // End Using skd 
 
             } // End Using bmp 
             

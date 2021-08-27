@@ -106,10 +106,10 @@ namespace VectorTileRenderer
         public string SourceName { get; set; } = "";
         public Source Source { get; set; } = null;
         public string SourceLayer { get; set; } = "";
-        public System.Collections.Generic.Dictionary<string, object> Paint { get; set; } = 
+        public System.Collections.Generic.Dictionary<string, object> Paint { get; set; } =
             new System.Collections.Generic.Dictionary<string, object>();
 
-        public System.Collections.Generic.Dictionary<string, object> Layout { get; set; } = 
+        public System.Collections.Generic.Dictionary<string, object> Layout { get; set; } =
             new System.Collections.Generic.Dictionary<string, object>();
 
         public object[] Filter { get; set; } = new object[0];
@@ -130,16 +130,16 @@ namespace VectorTileRenderer
     public class Style
     {
         public readonly string Hash = "";
-        public System.Collections.Generic.List<Layer> Layers = 
+        public System.Collections.Generic.List<Layer> Layers =
             new System.Collections.Generic.List<Layer>();
 
-        public System.Collections.Generic.Dictionary<string, Source> Sources = 
+        public System.Collections.Generic.Dictionary<string, Source> Sources =
             new System.Collections.Generic.Dictionary<string, Source>();
 
         // double screenScale = 0.2;// = 0.3;
         // double emToPx = 16;
 
-        System.Collections.Concurrent.ConcurrentDictionary<string, Brush[]> brushesCache = 
+        System.Collections.Concurrent.ConcurrentDictionary<string, Brush[]> brushesCache =
             new System.Collections.Concurrent.ConcurrentDictionary<string, Brush[]>();
 
         public string FontDirectory { get; set; } = null;
@@ -149,18 +149,16 @@ namespace VectorTileRenderer
         {
             string json = System.IO.File.ReadAllText(path);
             Newtonsoft.Json.Linq.JObject jObject = Newtonsoft.Json.Linq.JObject.Parse(json);
-
+            
 
             Newtonsoft.Json.Linq.JProperty srcs = jObject.Property("sources");
             if (srcs != null && srcs.Type == Newtonsoft.Json.Linq.JTokenType.Property && srcs.Value.Type == Newtonsoft.Json.Linq.JTokenType.Object)
             {
-                Newtonsoft.Json.Linq.JObject myobs = (Newtonsoft.Json.Linq.JObject)srcs.Value;
-
-                foreach (Newtonsoft.Json.Linq.JProperty jSource in myobs.Properties())
+                foreach (Newtonsoft.Json.Linq.JProperty jSource in ((Newtonsoft.Json.Linq.JObject)srcs.Value).Properties())
                 {
                     Source source = new Source();
 
-                    System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> sourceDict = 
+                    System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> sourceDict =
                         jSource.Value as Newtonsoft.Json.Linq.JObject;
 
                     source.Name = jSource.Name;
@@ -185,13 +183,11 @@ namespace VectorTileRenderer
 
             if (layers != null && layers.Value != null && layers.Value.Type == Newtonsoft.Json.Linq.JTokenType.Array)
             {
-                Newtonsoft.Json.Linq.JArray arr = (Newtonsoft.Json.Linq.JArray)(Newtonsoft.Json.Linq.JToken)layers.Value;
-
                 int i = 0;
-                foreach (Newtonsoft.Json.Linq.JObject jLayer in arr)
+                foreach (Newtonsoft.Json.Linq.JObject jLayer in layers.Value)
                 {
                     Layer layer = new Layer();
-                     layer.Index = i;
+                    layer.Index = i;
 
                     System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> layerDict = jLayer;
 
@@ -201,14 +197,14 @@ namespace VectorTileRenderer
                         layer.MinZoom = System.Convert.ToDouble(PlainifyJson(layerDict["minzoom"]));
                     }
 
-                     if (layerDict.ContainsKey("maxzoom"))
+                    if (layerDict.ContainsKey("maxzoom"))
                     {
                         layer.MaxZoom = System.Convert.ToDouble(PlainifyJson(layerDict["maxzoom"]));
                     }
 
-                     if (layerDict.ContainsKey("id"))
-                      {
-                         layer.ID = PlainifyJson(layerDict["id"]) as string;
+                    if (layerDict.ContainsKey("id"))
+                    {
+                        layer.ID = PlainifyJson(layerDict["id"]) as string;
                     }
 
                     if (layerDict.ContainsKey("type"))
@@ -279,7 +275,7 @@ namespace VectorTileRenderer
         {
             if (token.Type == Newtonsoft.Json.Linq.JTokenType.Object)
             {
-                System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> dict = 
+                System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> dict =
                     token as Newtonsoft.Json.Linq.JObject;
 
                 return dict.Select(pair => new System.Collections.Generic.KeyValuePair<string, object>(pair.Key, PlainifyJson(pair.Value)))
@@ -568,7 +564,7 @@ namespace VectorTileRenderer
 
                     // TODO check performance implications of Regex.Replace
                     brush.Text = System.Text.RegularExpressions.Regex.Replace(brush.TextField, @"\{([A-Za-z0-9\-\:_]+)\}",
-                        delegate(System.Text.RegularExpressions.Match m) 
+                        delegate (System.Text.RegularExpressions.Match m)
                         {
                             string key = StripBraces(m.Value);
                             if (attributes.ContainsKey(key))
@@ -693,9 +689,9 @@ namespace VectorTileRenderer
             if (colorString.StartsWith("hsl("))
             {
                 string[] segments = colorString.Replace('%', '\0').Split(',', '(', ')');
-                double h = double.Parse(segments[1]);
-                double s = double.Parse(segments[2]);
-                double l = double.Parse(segments[3]);
+                double h = double.Parse(segments[1], System.Globalization.CultureInfo.InvariantCulture);
+                double s = double.Parse(segments[2], System.Globalization.CultureInfo.InvariantCulture);
+                double l = double.Parse(segments[3], System.Globalization.CultureInfo.InvariantCulture);
 
                 ColorMine.ColorSpaces.IRgb color = (new ColorMine.ColorSpaces.Hsl()
                 {
@@ -710,10 +706,10 @@ namespace VectorTileRenderer
             if (colorString.StartsWith("hsla("))
             {
                 string[] segments = colorString.Replace('%', '\0').Split(',', '(', ')');
-                double h = double.Parse(segments[1]);
-                double s = double.Parse(segments[2]);
-                double l = double.Parse(segments[3]);
-                double a = double.Parse(segments[4]) * 255;
+                double h = double.Parse(segments[1], System.Globalization.CultureInfo.InvariantCulture);
+                double s = double.Parse(segments[2], System.Globalization.CultureInfo.InvariantCulture);
+                double l = double.Parse(segments[3], System.Globalization.CultureInfo.InvariantCulture);
+                double a = double.Parse(segments[4], System.Globalization.CultureInfo.InvariantCulture) * 255;
 
                 ColorMine.ColorSpaces.IRgb color = (new ColorMine.ColorSpaces.Hsl()
                 {
@@ -729,10 +725,10 @@ namespace VectorTileRenderer
             if (colorString.StartsWith("rgba("))
             {
                 string[] segments = colorString.Replace('%', '\0').Split(',', '(', ')');
-                double r = double.Parse(segments[1]);
-                double g = double.Parse(segments[2]);
-                double b = double.Parse(segments[3]);
-                double a = double.Parse(segments[4]) * 255;
+                double r = double.Parse(segments[1], System.Globalization.CultureInfo.InvariantCulture);
+                double g = double.Parse(segments[2], System.Globalization.CultureInfo.InvariantCulture);
+                double b = double.Parse(segments[3], System.Globalization.CultureInfo.InvariantCulture);
+                double a = double.Parse(segments[4], System.Globalization.CultureInfo.InvariantCulture) * 255;
 
                 return Color.FromArgb((byte)a, (byte)r, (byte)g, (byte)b);
             } // End if (colorString.StartsWith("rgba(")) 
@@ -740,16 +736,16 @@ namespace VectorTileRenderer
             if (colorString.StartsWith("rgb("))
             {
                 string[] segments = colorString.Replace('%', '\0').Split(',', '(', ')');
-                double r = double.Parse(segments[1]);
-                double g = double.Parse(segments[2]);
-                double b = double.Parse(segments[3]);
+                double r = double.Parse(segments[1], System.Globalization.CultureInfo.InvariantCulture);
+                double g = double.Parse(segments[2], System.Globalization.CultureInfo.InvariantCulture);
+                double b = double.Parse(segments[3], System.Globalization.CultureInfo.InvariantCulture);
 
                 return Color.FromRgb((byte)r, (byte)g, (byte)b);
             } // End if (colorString.StartsWith("rgb(")) 
 
             try
             {
-                return (Color)ColorConverter.ConvertFromString(colorString);
+                return ColorConverter.ConvertFromString(colorString);
             }
             catch (System.Exception e)
             {
@@ -1028,7 +1024,7 @@ namespace VectorTileRenderer
 
                 return true;
             } // End else if (operation == "!in")
-            
+
             return false;
         } // End Function ValidateUsingFilter
 
@@ -1044,7 +1040,7 @@ namespace VectorTileRenderer
                 {
                     return "";
                 }
-                
+
                 if (value[0] == '$')
                 {
                     return GetValue(attributes[value]);
@@ -1088,7 +1084,7 @@ namespace VectorTileRenderer
                     double zoomA = minZoom;
                     double zoomB = maxZoom;
                     int zoomAIndex = 0;
-                    
+
                     int zoomBIndex = pointStops.Count - 1;
 
                     // get min max zoom bounds from array
@@ -1212,7 +1208,7 @@ namespace VectorTileRenderer
             }
             else if (startValue.GetType().IsArray)
             {
-                System.Collections.Generic.List<object> result = 
+                System.Collections.Generic.List<object> result =
                     new System.Collections.Generic.List<object>();
 
                 object[] startArray = startValue as object[];

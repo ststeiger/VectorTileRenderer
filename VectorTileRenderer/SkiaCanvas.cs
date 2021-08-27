@@ -663,8 +663,8 @@ namespace VectorTileRenderer
 
         public byte[] FinishDrawing()
         {
-            //surface.Canvas.Flush();
-            //grContext.
+            // surface.Canvas.Flush();
+            // grContext.
 
             // AddDirtyRect: Specifies the area of the bitmap that changed.
             // bitmap.AddDirtyRect(new Int32Rect(0, 0, this.width, this.height));
@@ -682,11 +682,11 @@ namespace VectorTileRenderer
                     using (SKData pngData = skImg.Encode(SKEncodedImageFormat.Png, 100))
                     {
                         pngBytes = pngData.ToArray();
-                    }
+                    } // End Using pngData 
 
                 } // End Using skImg 
 
-            }
+            } // End Using bmp 
 
             return pngBytes;
         }
