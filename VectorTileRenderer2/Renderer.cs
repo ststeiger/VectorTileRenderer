@@ -121,7 +121,27 @@ namespace VectorTileRenderer
         } // End Function LoadBitmap 
         */
 
-        public async static System.Threading.Tasks.Task<byte[]> Render(
+
+        public static async System.Threading.Tasks.Task<byte[]> Render(
+            Style style, 
+            int x,
+            int y,
+            double zoom,
+            double sizeX = 512,
+            double sizeY = 512,
+            double scale = 1)
+        {
+            byte[] bitmap = null;
+
+            using (SkiaCanvas canvas = new SkiaCanvas())
+            {
+                bitmap = await Render(style, canvas, x, y, zoom, sizeX, sizeY, scale);
+            }
+            
+            return bitmap;
+        }
+
+        internal async static System.Threading.Tasks.Task<byte[]> Render(
             Style style, 
             ICanvas canvas, 
             int x, 
@@ -224,7 +244,7 @@ namespace VectorTileRenderer
                             {
                                 if (layer.Source.Provider is Sources.ITileSource)
                                 {
-                                    System.IO.Stream tile = await (layer.Source.Provider as Sources.ITileSource).GetTile(x, y, (int)zoom);
+                                    System.IO.Stream tile = await layer.Source.Provider.GetTile(x, y, (int)zoom);
 
                                     if (tile == null)
                                     {

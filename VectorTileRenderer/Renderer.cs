@@ -11,7 +11,7 @@ namespace VectorTileRenderer
     public class Renderer
     {
         // TODO make it instance based... maybe
-        private static Object cacheLock = new Object();
+        private static object cacheLock = new object();
 
         enum VisualLayerType
         {
@@ -113,7 +113,28 @@ namespace VectorTileRenderer
         }
         */
 
-        public async static Task<byte[]> Render(Style style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1)
+        public static async System.Threading.Tasks.Task<byte[]> Render(
+            Style style,
+            int x,
+            int y,
+            double zoom,
+            double sizeX = 512,
+            double sizeY = 512,
+            double scale = 1)
+        {
+            byte[] bitmap = null;
+
+            using (SkiaCanvas canvas = new SkiaCanvas())
+            {
+                bitmap = await Render(style, canvas, x, y, zoom, sizeX, sizeY, scale);
+            }
+
+            return bitmap;
+        }
+
+
+        
+        internal async static Task<byte[]> Render(Style style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1)
         {
             Dictionary<Source, Stream> rasterTileCache = new Dictionary<Source, Stream>();
             Dictionary<Source, VectorTile> vectorTileCache = new Dictionary<Source, VectorTile>();
@@ -202,7 +223,7 @@ namespace VectorTileRenderer
                             {
                                 if (layer.Source.Provider is Sources.ITileSource)
                                 {
-                                    Stream tile = await (layer.Source.Provider as Sources.ITileSource).GetTile(x, y, (int)zoom);
+                                    Stream tile = await layer.Source.Provider.GetTile(x, y, (int)zoom);
 
                                     if (tile == null)
                                     {

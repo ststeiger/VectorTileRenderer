@@ -13,7 +13,7 @@ using System.Text;
 namespace VectorTileRenderer
 {
     public class SkiaCanvas 
-        : ICanvas
+        : ICanvas, System.IDisposable
     {
         int width;
         int height;
@@ -34,6 +34,7 @@ namespace VectorTileRenderer
 
         Dictionary<string, SKTypeface> fontPairs = new Dictionary<string, SKTypeface>();
         List<Rect> textRectangles = new List<Rect>();
+        private bool disposedValue;
 
         public void StartDrawing(double width, double height)
         {
@@ -675,20 +676,81 @@ namespace VectorTileRenderer
 
             byte[] pngBytes = null;
 
-            using (SKBitmap bmp = this.bitmap)
+            using (SKImage skImg = SKImage.FromBitmap(this.bitmap))
             {
-                using (SKImage skImg = SKImage.FromBitmap(this.bitmap))
+                using (SKData pngData = skImg.Encode(SKEncodedImageFormat.Png, 100))
                 {
-                    using (SKData pngData = skImg.Encode(SKEncodedImageFormat.Png, 100))
-                    {
-                        pngBytes = pngData.ToArray();
-                    } // End Using pngData 
+                    pngBytes = pngData.ToArray();
+                } // End Using pngData 
 
-                } // End Using skImg 
-
-            } // End Using bmp 
+            } // End Using skImg 
 
             return pngBytes;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: Verwalteten Zustand (verwaltete Objekte) bereinigen
+                    if(this.bitmap != null)
+                        this.bitmap.Dispose();
+
+                    if (this.canvas != null)
+                        this.canvas.Dispose();
+
+                    // this.grContext.Dispose();
+                    // this.GRBackendRenderTargetDesc.Dispose();
+
+                    if (this.fontPairs != null)
+                    {
+                        foreach (KeyValuePair<string, SKTypeface> kvp in this.fontPairs)
+                        {
+                            if (kvp.Value != null)
+                            {
+                                kvp.Value.Dispose();
+                            }
+                        } // Next kvp 
+
+                    } // End if (this.fontPairs != null) 
+
+                } // End if (disposing) 
+
+                // TODO: Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben
+
+                if (this.fontPairs != null)
+                    this.fontPairs.Clear();
+
+                if (this.clipRectanglePath != null)
+                    this.clipRectanglePath.Clear();
+
+                if (this.textRectangles != null)
+                    this.textRectangles.Clear();
+                
+                this.fontPairs = null;
+                this.clipRectanglePath = null;
+                this.textRectangles = null;
+
+
+                // TODO: Große Felder auf NULL setzen
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: Finalizer nur überschreiben, wenn "Dispose(bool disposing)" Code für die Freigabe nicht verwalteter Ressourcen enthält
+        // ~SkiaCanvas()
+        // {
+        //     // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
+        //     Dispose(disposing: false);
+        // }
+
+        void IDisposable.Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -31,8 +31,8 @@ namespace TestRenderer
             style.SetSourceProvider(0, provider);
 
             // render it on a skia canvas
-            VectorTileRenderer.SkiaCanvas canvas = new VectorTileRenderer.SkiaCanvas();
-            byte[] bitmap = await VectorTileRenderer.Renderer.Render(style, canvas, x, y, zoom, 512, 512, 1);
+            // VectorTileRenderer.SkiaCanvas canvas = new VectorTileRenderer.SkiaCanvas();
+            byte[] bitmap = await VectorTileRenderer.Renderer.Render(style, x, y, zoom, 512, 512, 1);
 
             //using (System.Drawing.Bitmap bmp = WindowsMediaConversion.BitmapFromSource2(bitmap))
             //{
@@ -96,8 +96,9 @@ namespace TestRenderer
                 // https://github.com/klokantech/tileserver-gl-data
 
                 // render it on a skia canvas
-                VectorTileRenderer.SkiaCanvas canvas = new VectorTileRenderer.SkiaCanvas();
-                 byte[] bitmap = await VectorTileRenderer.Renderer.Render(style, canvas, x, y, zoom, 512, 512, 1);
+                // VectorTileRenderer.SkiaCanvas canvas = new VectorTileRenderer.SkiaCanvas();
+                // byte[] bitmap = await VectorTileRenderer.Renderer.Render(style, canvas, x, y, zoom, 512, 512, 1);
+                byte[] bitmap = await VectorTileRenderer.Renderer.Render(style, x, y, zoom, 512, 512, 1);
 
 
                 System.IO.File.WriteAllBytes(@"D:\TileFromMbTiles.png", bitmap);
