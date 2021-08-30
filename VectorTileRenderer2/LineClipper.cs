@@ -2,8 +2,6 @@
 namespace VectorTileRenderer
 {
 
-    using System.Linq;
-
 
     internal static class LineClipper
     {
@@ -202,7 +200,7 @@ namespace VectorTileRenderer
                     }
                     else
                     {
-                        if (newLine.Last() == newSegment.Item1)
+                        if (newLine[newLine.Count - 1] == newSegment.Item1)
                         {
                             newLine.Add(newSegment.Item2);
                         }

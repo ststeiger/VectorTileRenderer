@@ -2,7 +2,7 @@
 namespace VectorTileRenderer
 {
 
-    using System.Linq;
+    // using System.Linq;
 
 
     public class Renderer
@@ -368,7 +368,8 @@ namespace VectorTileRenderer
                 }
             }
 
-            foreach (VisualLayer layer in visualLayers.OrderBy(item => item.Brush.ZIndex).Reverse())
+
+            foreach (VisualLayer layer in visualLayers.OrderByDescending(item => item.Brush.ZIndex))
             {
                 if (layer.Type == VisualLayerType.Vector)
                 {
@@ -420,9 +421,9 @@ namespace VectorTileRenderer
             double sizeY, 
             double extent)
         {
-            return coordinates.Select(list =>
+            return coordinates.Map(list =>
             {
-                return list.Select(point =>
+                return list.Map(point =>
                 {
                     Point newPoint = new Point(0, 0);
 
@@ -433,8 +434,8 @@ namespace VectorTileRenderer
                     newPoint.Y = y;
 
                     return newPoint;
-                }).ToList();
-            }).ToList();
+                }); //.ToList();
+            }); //.ToList();
         } // End Function LocalizeGeometry 
 
 

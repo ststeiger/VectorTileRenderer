@@ -3,7 +3,7 @@ namespace VectorTileRenderer
 {
 
     using System.Collections.Generic;
-    using System.Linq;
+    // using System.Linq;
     using ClipperLib;
     using SkiaSharp;
 
@@ -160,7 +160,7 @@ namespace VectorTileRenderer
 
             if (success && solution.Count > 0)
             {
-                List<Point> result = solution.First().Select(item => new Point(item.X, item.Y)).ToList();
+                List<Point> result = solution.First().Map(item => new Point(item.X, item.Y)); //.ToList();
                 return result;
             } // End if (success && solution.Count > 0) 
 
@@ -228,7 +228,7 @@ namespace VectorTileRenderer
 
             if(style.Paint.LineDashArray.Length > 0)
             {
-                SKPathEffect effect = SKPathEffect.CreateDash(style.Paint.LineDashArray.Select(n => (float)n).ToArray(), 0);
+                SKPathEffect effect = SKPathEffect.CreateDash(style.Paint.LineDashArray.Map(n => (float)n).ToArray(), 0);
                 fillPaint.PathEffect = effect;
             } // End if(style.Paint.LineDashArray.Count() > 0) 
 

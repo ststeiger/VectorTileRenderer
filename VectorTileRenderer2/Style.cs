@@ -2,7 +2,7 @@
 namespace VectorTileRenderer
 {
 
-    using System.Linq;
+    // using System.Linq;
 
 
     public class Brush
@@ -278,13 +278,13 @@ namespace VectorTileRenderer
                 System.Collections.Generic.IDictionary<string, Newtonsoft.Json.Linq.JToken> dict =
                     token as Newtonsoft.Json.Linq.JObject;
 
-                return dict.Select(pair => new System.Collections.Generic.KeyValuePair<string, object>(pair.Key, PlainifyJson(pair.Value)))
+                return dict.Map(pair => new System.Collections.Generic.KeyValuePair<string, object>(pair.Key, PlainifyJson(pair.Value)))
                         .ToDictionary(key => key.Key, value => value.Value);
             }
             else if (token.Type == Newtonsoft.Json.Linq.JTokenType.Array)
             {
                 Newtonsoft.Json.Linq.JArray array = token as Newtonsoft.Json.Linq.JArray;
-                return array.Select(item => PlainifyJson(item)).ToArray();
+                return array.Map(item => PlainifyJson(item)).ToArray();
             }
             else
             {
@@ -503,7 +503,7 @@ namespace VectorTileRenderer
                 if (paintData.ContainsKey("line-dasharray"))
                 {
                     object[] array = (GetValue(paintData["line-dasharray"], attributes) as object[]);
-                    paint.LineDashArray = array.Select(item => System.Convert.ToDouble(item) * scale).ToArray();
+                    paint.LineDashArray = array.Map(item => System.Convert.ToDouble(item) * scale).ToArray();
                 }
 
                 // --
@@ -579,7 +579,7 @@ namespace VectorTileRenderer
 
                 if (layoutData.ContainsKey("text-font"))
                 {
-                    paint.TextFont = ((object[])GetValue(layoutData["text-font"], attributes)).Select(item => (string)item).ToArray();
+                    paint.TextFont = ((object[])GetValue(layoutData["text-font"], attributes)).Map(item => (string)item).ToArray();
                 }
 
                 if (layoutData.ContainsKey("text-size"))
@@ -1068,8 +1068,8 @@ namespace VectorTileRenderer
                 {
                     object[] stops = dict["stops"] as object[];
                     // if it has stops, it's interpolation domain now :P
-                    // System.Collections.Generic.List<System.Tuple<double, JToken>> pointStops = stops.Select(item => new System.Tuple<double, JToken>((item as JArray)[0].Value<double>(), (item as JArray)[1])).ToList();
-                    System.Collections.Generic.List<System.Tuple<double, object>> pointStops = stops.Select(item => new System.Tuple<double, object>(System.Convert.ToDouble((item as object[])[0]), (item as object[])[1])).ToList();
+                    // System.Collections.Generic.List<System.Tuple<double, JToken>> pointStops = stops.Map(item => new System.Tuple<double, JToken>((item as JArray)[0].Value<double>(), (item as JArray)[1])).ToList();
+                    System.Collections.Generic.List<System.Tuple<double, object>> pointStops = stops.Map(item => new System.Tuple<double, object>(System.Convert.ToDouble((item as object[])[0]), (item as object[])[1])); //.ToList();
 
                     double zoom = (double)attributes["$zoom"];
                     double minZoom = pointStops.First().Item1;
