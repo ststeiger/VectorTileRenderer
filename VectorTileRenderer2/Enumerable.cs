@@ -3,15 +3,15 @@ namespace VectorTileRenderer
 {
 
 
-	public static class Enumerable
+	internal static class Enumerable
     {
 
 
-        public delegate bool FilterCallback_t<TSource>(TSource s);
-        public delegate TResult MapCallback_t<TSource, TResult>(TSource s);
+        internal delegate bool FilterCallback_t<TSource>(TSource s);
+        internal delegate TResult MapCallback_t<TSource, TResult>(TSource s);
 
 
-        public static double Min(this System.Collections.Generic.IEnumerable<double> source)
+        internal static double Min(this System.Collections.Generic.IEnumerable<double> source)
         {
             if (source == null)
                 throw new System.ArgumentNullException("source");
@@ -29,7 +29,7 @@ namespace VectorTileRenderer
         }
 
 
-        public static double Max(this System.Collections.Generic.IEnumerable<double> source)
+        internal static double Max(this System.Collections.Generic.IEnumerable<double> source)
         {
             if (source == null)
                 throw new System.ArgumentNullException("source");
@@ -49,7 +49,7 @@ namespace VectorTileRenderer
         }
 
 
-        public static double Min<TSource>(this System.Collections.Generic.IEnumerable<TSource> source
+        internal static double Min<TSource>(this System.Collections.Generic.IEnumerable<TSource> source
             , MapCallback_t<TSource, double> selector)
         {
             if (source == null)
@@ -71,7 +71,7 @@ namespace VectorTileRenderer
         }
 
 
-        public static double Max<TSource>(this System.Collections.Generic.IEnumerable<TSource> source
+        internal static double Max<TSource>(this System.Collections.Generic.IEnumerable<TSource> source
             , MapCallback_t<TSource, double> selector)
         {
             if (source == null)
@@ -93,7 +93,7 @@ namespace VectorTileRenderer
         }
 
 
-        public static System.Collections.Generic.IEnumerable<TSource> Skip<TSource>(
+        internal static System.Collections.Generic.IEnumerable<TSource> Skip<TSource>(
             this System.Collections.Generic.IEnumerable<TSource> source, int count)
         {
             if (source == null)
@@ -124,7 +124,7 @@ namespace VectorTileRenderer
 
 
         // Select 
-        public static System.Collections.Generic.List<TResult> Map<TSource, TResult>(
+        internal static System.Collections.Generic.List<TResult> Map<TSource, TResult>(
               this System.Collections.Generic.IEnumerable<TSource> source
             , MapCallback_t<TSource, TResult> selector)
         {
@@ -144,7 +144,7 @@ namespace VectorTileRenderer
 
 
         // Where
-        public static System.Collections.Generic.List<TSource> Filter<TSource>(
+        internal static System.Collections.Generic.List<TSource> Filter<TSource>(
               this System.Collections.Generic.IEnumerable<TSource> source
             , FilterCallback_t<TSource> predicate)
         {
@@ -165,7 +165,7 @@ namespace VectorTileRenderer
         } // End Function Filter 
 
 
-        public static System.Collections.Generic.IEnumerable<TSource> Reverse<TSource>(
+        internal static System.Collections.Generic.IEnumerable<TSource> Reverse<TSource>(
             this System.Collections.Generic.IEnumerable<TSource> source)
         {
             if (source == null)
@@ -187,7 +187,7 @@ namespace VectorTileRenderer
 
 
 
-        public static System.Collections.Generic.List<TSource> OrderByDescending<TSource, TKey>(
+        internal static System.Collections.Generic.List<TSource> OrderByDescending<TSource, TKey>(
             this System.Collections.Generic.IEnumerable<TSource> source,
             MapCallback_t<TSource, TKey> keySelector) where TKey : System.IComparable<TKey>
         {
@@ -204,7 +204,7 @@ namespace VectorTileRenderer
         }
 
 
-        public static System.Collections.Generic.List<TSource> OrderBy<TSource, TKey>(
+        internal static System.Collections.Generic.List<TSource> OrderBy<TSource, TKey>(
             this System.Collections.Generic.IEnumerable<TSource> source,
             MapCallback_t<TSource, TKey> keySelector) where TKey:System.IComparable<TKey>
         {
@@ -270,7 +270,7 @@ namespace VectorTileRenderer
             return default(TSource);
         }
 
-        public static TSource First<TSource>(this System.Collections.Generic.IEnumerable<TSource> source)
+        internal static TSource First<TSource>(this System.Collections.Generic.IEnumerable<TSource> source)
         {
             if (source == null)
                 throw new System.ArgumentNullException("source");
@@ -293,7 +293,7 @@ namespace VectorTileRenderer
             throw new System.InvalidOperationException("The source sequence is empty");
         }
 
-        public static TSource First<TSource>(
+        internal static TSource First<TSource>(
               this System.Collections.Generic.IEnumerable<TSource> source, 
               MapCallback_t<TSource, bool> predicate)
         {
@@ -311,11 +311,11 @@ namespace VectorTileRenderer
 
         static class PredicateOf<T>
         {
-            public static readonly MapCallback_t<T, bool> Always = delegate(T t) { return true; };
+            internal static readonly MapCallback_t<T, bool> Always = delegate(T t) { return true; };
         }
 
 
-        public static TSource Last<TSource>(this System.Collections.Generic.IEnumerable<TSource> source)
+        internal static TSource Last<TSource>(this System.Collections.Generic.IEnumerable<TSource> source)
         {
             if (source == null)
                 throw new System.ArgumentNullException("source");
@@ -331,7 +331,7 @@ namespace VectorTileRenderer
             return source.Last(PredicateOf<TSource>.Always, Fallback.Throw);
         }
 
-        public static TSource Last<TSource>(this System.Collections.Generic.IEnumerable<TSource> source
+        internal static TSource Last<TSource>(this System.Collections.Generic.IEnumerable<TSource> source
             , MapCallback_t<TSource, bool> predicate)
         {
             if (source == null)
@@ -343,14 +343,14 @@ namespace VectorTileRenderer
         }
 
 
-        public static System.Collections.Generic.Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
+        internal static System.Collections.Generic.Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
             this System.Collections.Generic.IEnumerable<TSource> source,
             MapCallback_t<TSource, TKey> keySelector, MapCallback_t<TSource, TElement> elementSelector)
         {
             return ToDictionary<TSource, TKey, TElement>(source, keySelector, elementSelector, null);
         }
 
-        public static System.Collections.Generic.Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
+        internal static System.Collections.Generic.Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
             this System.Collections.Generic.IEnumerable<TSource> source,
                 MapCallback_t<TSource, TKey> keySelector, 
                 MapCallback_t<TSource, TElement> elementSelector, 
@@ -373,13 +373,13 @@ namespace VectorTileRenderer
             return dict;
         }
 
-        public static System.Collections.Generic.Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this System.Collections.Generic.IEnumerable<TSource> source,
+        internal static System.Collections.Generic.Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this System.Collections.Generic.IEnumerable<TSource> source,
                 MapCallback_t<TSource, TKey> keySelector)
         {
             return ToDictionary(source, keySelector, null);
         }
 
-        public static System.Collections.Generic.Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(
+        internal static System.Collections.Generic.Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(
             this System.Collections.Generic.IEnumerable<TSource> source,
                 MapCallback_t<TSource, TKey> keySelector, System.Collections.Generic.IEqualityComparer<TKey> comparer)
         {
