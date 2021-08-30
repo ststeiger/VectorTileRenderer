@@ -32,7 +32,16 @@ namespace RasterTileServer.Controllers
             string bd = System.AppDomain.CurrentDomain.BaseDirectory;
             bd = System.IO.Path.Combine(bd, "..", "..", "..");
             bd = System.IO.Path.GetFullPath(bd);
-            bd = System.IO.Path.Combine(bd, "Cache", STYLE);
+
+            bd = System.IO.Path.Combine(bd, "Cache");
+
+            if (!System.IO.Directory.Exists(bd))
+                System.IO.Directory.CreateDirectory(bd);
+
+            bd = System.IO.Path.Combine(bd, STYLE);
+
+            if (!System.IO.Directory.Exists(bd))
+                System.IO.Directory.CreateDirectory(bd);
 
             return bd;
         }
