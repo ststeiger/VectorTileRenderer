@@ -1,28 +1,35 @@
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+
 
 namespace RasterTileServer
 {
+
+
+    // https://mcguirev10.com/2020/01/12/logging-during-application-startup.html
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+        public IConfiguration Configuration { get; }
+
+
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -33,11 +40,35 @@ namespace RasterTileServer
             services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
 
             services.AddRazorPages();
-        }
+        } // End Sub ConfigureServices 
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            // string virtual_directory = "/Virt_DIR";
+            string virtual_directory = "/";
+
+            if (virtual_directory.EndsWith("/"))
+                virtual_directory = virtual_directory.Substring(0, virtual_directory.Length - 1);
+
+            // Don't map if you don't have to 
+            // (wonder what the framework does or does not do for that case)
+            if (string.IsNullOrWhiteSpace(virtual_directory))
+                ConfigureVirtual(app, env, loggerFactory); 
+            else
+                app.Map(virtual_directory, 
+                    delegate (IApplicationBuilder mappedApp)
+                    {
+                        ConfigureVirtual(mappedApp, env, loggerFactory);
+                    }
+                );
+        } // End Sub Configure 
+
+
+        public void ConfigureVirtual(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -52,7 +83,7 @@ namespace RasterTileServer
             app.UseHttpsRedirection();
 
 
-            var dfo = new DefaultFilesOptions();
+            DefaultFilesOptions dfo = new DefaultFilesOptions();
             dfo.DefaultFileNames.Clear();
             dfo.DefaultFileNames.Add("index.htm");
             dfo.DefaultFileNames.Add("index.html");
@@ -76,6 +107,10 @@ namespace RasterTileServer
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-        }
-    }
-}
+        } // End Sub ConfigureVirtual 
+
+
+    } // End Class Startup 
+
+
+} // End Namespace RasterTileServer 
