@@ -8,11 +8,11 @@ namespace RasterTileServer.Controllers
     {
 
 
-        public const string STYLE = "bright-style";
-        public static string CACHE_DIR = GetCacheDir();
-        
+        protected const string STYLE = "bright-style";
 
-        public static string GetBasePath()
+
+
+        private static string GetBasePath()
         {
             // return @"D:\username\Documents\Visual Studio 2017\Projects\VectorTileRenderer";
 
@@ -25,7 +25,7 @@ namespace RasterTileServer.Controllers
         }
 
 
-        public static string GetCacheDir()
+        private static string GetCacheDir()
         {
             // return @"D:\username\Documents\Visual Studio 2017\Projects\VectorTileRenderer";
 
@@ -48,7 +48,7 @@ namespace RasterTileServer.Controllers
 
 
 
-        public static VectorTileRenderer.Style GetInitialStyle()
+        private static VectorTileRenderer.Style GetInitialStyle()
         {
             string basePath = GetBasePath();
 
@@ -72,7 +72,10 @@ namespace RasterTileServer.Controllers
             return style;
         }
 
-        public static VectorTileRenderer.Style s_style = GetInitialStyle();
+
+        private static string CACHE_DIR = GetCacheDir();
+        private static VectorTileRenderer.Style s_style = GetInitialStyle();
+
 
 
         // https://alastaira.wordpress.com/2011/07/06/converting-tms-tile-coordinates-to-googlebingosm-tile-coordinates/
@@ -95,32 +98,40 @@ namespace RasterTileServer.Controllers
             // byte[] ba = ba = System.Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEWq09/P7Lz1AAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg==");
             // return new System.IO.MemoryStream(ba);
 
-            string fn = "de" // lang.ToLowerInvariant()  
+            string fileName = "de" // lang.ToLowerInvariant()  
                 + "_" + x.ToString(System.Globalization.CultureInfo.InvariantCulture) 
                 + "_" + y.ToString(System.Globalization.CultureInfo.InvariantCulture) 
                 + "_" + z.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".png";
 
-            fn = System.IO.Path.Combine(CACHE_DIR, fn);
+            fileName = System.IO.Path.Combine(CACHE_DIR, fileName);
 
             // Cached  
-            if (System.IO.File.Exists(fn))
-                return System.IO.File.OpenRead(fn);
+            if (System.IO.File.Exists(fileName))
+                return System.IO.File.OpenRead(fileName);
 
             byte[] bitmap = await VectorTileRenderer.Renderer.Render(s_style, x, y, z, 256, 256, 1);
-            System.IO.File.WriteAllBytes(fn, bitmap);
+            System.IO.File.WriteAllBytes(fileName, bitmap);
 
             return new System.IO.MemoryStream(bitmap);
         } // End Function GetTileStream 
 
+
+
+        // Arabic test:
+        // https://localhost:44305/tiles/63157/52354/17.png?lang=en&no_cache=1630490579563
 
         // https://localhost:44305/tiles/1/2/3
         // https://localhost:44305/tiles/1/2/3.png
         // tiles/{x:int}/{y:int}/{z:int}
         [Microsoft.AspNetCore.Mvc.HttpGet, Microsoft.AspNetCore.Mvc.Route("tiles/{x:int}/{y:int}/{z:int}")]
         [Microsoft.AspNetCore.Mvc.HttpGet, Microsoft.AspNetCore.Mvc.Route("tiles/{x:int}/{y:int}/{z:int}.png")]
-        public async System.Threading.Tasks.Task< Microsoft.AspNetCore.Mvc.FileStreamResult> GetTile(int x, int y, int z, string lang)
+        public async System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.FileStreamResult> GetTile(int x, int y, int z) //, [FromHeader] string lang)
         {
             y = FromTmsY(y, z);
+
+            var host = this.RouteData.Values["Host"];
+            System.Console.WriteLine(host);
+
 
             System.IO.Stream stream = await GetTileStream(x, y, z);
             if (stream == null)
@@ -128,6 +139,10 @@ namespace RasterTileServer.Controllers
                 Response.StatusCode = 404;
                 return null;
             }
+
+
+
+
 
             Response.StatusCode = 200;
             Response.Headers["accept-ranges"] = "bytes";
