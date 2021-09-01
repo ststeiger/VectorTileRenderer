@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ColorMine\ColorMine.csproj" />
     <ProjectReference Include="..\Mapbox.VectorTile\Mapbox.VectorTile.csproj" />
   </ItemGroup>
 
