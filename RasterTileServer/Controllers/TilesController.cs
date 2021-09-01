@@ -58,8 +58,10 @@ namespace RasterTileServer.Controllers
             style.FontDirectory = System.IO.Path.Combine(basePath, "styles", "fonts");
 
             // set mbtiles as tile provider
-            string mb = @"D:\username\Downloads\2017-07-03_planet_z0_z14.mbtiles";
-            // mb = @"C:\Users\User\Downloads\2017-07-03_france_monaco.mbtiles";
+            string mb = @"C:\Users\User\Documents\OSM\2017-07-03_planet_z0_z14.mbtiles";
+            if ("COR".Equals(System.Environment.UserDomainName, System.StringComparison.InvariantCultureIgnoreCase))
+                mb = @"D:\username\Downloads\2017-07-03_planet_z0_z14.mbtiles";
+
             VectorTileRenderer.Sources.MbTilesSource provider = new VectorTileRenderer.Sources.MbTilesSource(mb);
             style.SetSourceProvider(0, provider);
 

@@ -200,7 +200,7 @@ namespace VectorTileRenderer
                     }
                     else
                     {
-                        if (newLine[newLine.Count - 1] == newSegment.Item1)
+                        if (newLine.Last() == newSegment.Item1)
                         {
                             newLine.Add(newSegment.Item2);
                         }
