@@ -13,4 +13,8 @@
     <ProjectReference Include="..\VectorTileRenderer2\VectorTileRenderer2.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\fonts\" />
+  </ItemGroup>
+
 </Project>

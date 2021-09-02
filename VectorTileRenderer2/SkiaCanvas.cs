@@ -363,8 +363,30 @@ namespace VectorTileRenderer
         } // End Function TextCollides 
 
 
+
+
+
+        static SKTypeface notoFont;
+
+        public static SKTypeface GetNoto(string glyphDir)
+        {
+            string fontPath = System.IO.Path.Combine(glyphDir, "NotoSans-Regular.ttf");
+            SKTypeface noto = SKTypeface.FromFile(fontPath);
+            return noto;
+
+
+        }
+
+
         protected SKTypeface GetFont(string[] familyNames, Brush style)
         {
+            if (notoFont != null)
+                return notoFont;
+
+            notoFont = GetNoto(style.GlyphsDirectory);
+            return notoFont;
+
+
             foreach (string name in familyNames)
             {
                 if (fontPairs.ContainsKey(name))
@@ -427,9 +449,10 @@ namespace VectorTileRenderer
             if(allLines.Length > 0)
             {
                 string biggestLine = allLines.OrderBy(line => line.Length).Last();
-                byte[] bytes = System.Text.Encoding.UTF32.GetBytes(biggestLine);
+                // byte[] bytes = System.Text.Encoding.UTF32.GetBytes(biggestLine);
 
-                int width = (int)(paint.MeasureText(bytes));
+                // int width = (int)(paint.MeasureText(bytes));
+                int width = (int)paint.MeasureText(biggestLine);
                 int left = (int)(geometry.X - width / 2);
                 int top = (int)(geometry.Y - style.Paint.TextSize/2 * allLines.Length);
                 int height = (int)(style.Paint.TextSize * allLines.Length);
@@ -472,16 +495,18 @@ namespace VectorTileRenderer
             int i = 0;
             foreach (string line in allLines)
             {
-                byte[] bytes = System.Text.Encoding.UTF32.GetBytes(line);
+                // byte[] bytes = System.Text.Encoding.UTF32.GetBytes(line);
                 float lineOffset = (float)(i * style.Paint.TextSize) - ((float)(allLines.Length) * (float)style.Paint.TextSize) / 2 + (float)style.Paint.TextSize;
                 SKPoint position = new SKPoint((float)geometry.X + (float)(style.Paint.TextOffset.X * style.Paint.TextSize), (float)geometry.Y + (float)(style.Paint.TextOffset.Y * style.Paint.TextSize) + lineOffset);
 
                 if (style.Paint.TextStrokeWidth != 0)
                 {
-                    canvas.DrawText(bytes, position, strokePaint);
+                    canvas.DrawText(line, position, strokePaint);
+                    // canvas.DrawText(bytes, position, strokePaint);
                 }
 
-                canvas.DrawText(bytes, position, paint);
+                // canvas.DrawText(bytes, position, paint);
+                canvas.DrawText(line, position, paint);
                 i++;
             } // Next line 
 

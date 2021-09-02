@@ -186,7 +186,7 @@ https://stackoverflow.com/questions/29863064/haproxy-dynamic-acl
                     if (splittedUrl != null && (splittedUrl.Length > 0))
                     {
                         context.GetRouteData().Values.Add("Host", splittedUrl[0]);
-                        context.Items["Host2"] = splittedUrl[0];
+                        context.Items["Host2"] = url;
 
                         //foreach (System.Collections.Generic.KeyValuePair<System.Type, object> kvp in context.Features)
                         //{

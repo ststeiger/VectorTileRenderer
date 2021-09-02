@@ -106,8 +106,7 @@ namespace RasterTileServer.Controllers
             fileName = System.IO.Path.Combine(CACHE_DIR, fileName);
 
             // Cached  
-            if (System.IO.File.Exists(fileName))
-                return System.IO.File.OpenRead(fileName);
+            // if (System.IO.File.Exists(fileName)) return System.IO.File.OpenRead(fileName);
 
             byte[] bitmap = await VectorTileRenderer.Renderer.Render(s_style, x, y, z, 256, 256, 1);
             System.IO.File.WriteAllBytes(fileName, bitmap);
@@ -119,6 +118,7 @@ namespace RasterTileServer.Controllers
 
         // Arabic test:
         // https://localhost:44305/tiles/63157/52354/17.png?lang=en&no_cache=1630490579563
+        // https://localhost:44305/tiles/15919/13086/15.png?lang=en&no_cache=1630591921139
 
         // https://localhost:44305/tiles/1/2/3
         // https://localhost:44305/tiles/1/2/3.png

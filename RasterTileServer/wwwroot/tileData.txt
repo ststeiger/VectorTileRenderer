@@ -1,0 +1,27 @@
+﻿
+https://corona-blog.net/2021/09/01/jens-spahn-wenn-wir-geschuetzte-menschen-auch-genauso-testen-wie-ungeschuetzte-dann-hoert-diese-pandemie-nie-auf/
+
+
+https://github.com/googlefonts/noto-fonts/issues/13
+
+
+
+foreach (VisualLayer layer in visualLayers.OrderByDescending(item => item.Brush.ZIndex))
+{
+
+    System.Collections.Generic.Dictionary<string, object> attributesDict = 
+            feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
+
+            
+    {
+      "class": "town",
+      "name": "Douyet ⴹⵡⵢⴰⵜ الظويات",
+      "name:ar": "الظويات",
+      "name:fr": "Douyet",
+      "name:latin": "Douyet",
+      "name:nonlatin": "ⴹⵡⵢⴰⵜ الظويات",
+      "name_de": "Douyet ⴹⵡⵢⴰⵜ الظويات",
+      "name_en": "Douyet ⴹⵡⵢⴰⵜ الظويات",
+      "name_int": "Douyet",
+      "rank": 11
+    }
