@@ -96,34 +96,6 @@ https://stackoverflow.com/questions/29863064/haproxy-dynamic-acl
         } // End Sub Configure 
 
 
-        public class HostBasedRouteData
-            : IRoutingFeature
-        {
-            protected RouteData m_routingData;
-
-            public HostBasedRouteData(string hostName)
-            {
-                this.m_routingData = new RouteData();
-                if(!string.IsNullOrEmpty(hostName))
-                    this.m_routingData.Values["HOST"] = hostName;
-            }
-
-
-            public HostBasedRouteData()
-                : this(null)
-            { }
-
-
-
-            RouteData IRoutingFeature.RouteData 
-            { get { return this.m_routingData; }
-                set {
-                    this.m_routingData = value;
-                }
-            }
-        }
-
-
         public void ConfigureVirtual(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
 
@@ -141,53 +113,6 @@ https://stackoverflow.com/questions/29863064/haproxy-dynamic-acl
             app.UseHttpsRedirection();
 
 
-            // https://stackoverflow.com/questions/60791843/changing-routedata-in-asp-net-core-3-1-in-middleware
-            app.Use(
-                async delegate (Microsoft.AspNetCore.Http.HttpContext context, System.Func<System.Threading.Tasks.Task> next)
-                {
-                    string url = context.Request.Headers["HOST"];
-                    string[] splittedUrl = url.Split('.');
-
-                    if (splittedUrl != null && (splittedUrl.Length > 0))
-                    {
-
-
-
-                        // context.GetRouteData().Values.Add("Host", splittedUrl[0]);
-
-                        context.Items["Host"] = splittedUrl[0];
-                        /*
-
-                        IRoutingFeature routingFeature = context.Features[typeof(IRoutingFeature)] as IRoutingFeature;
-                        if (routingFeature == null)
-                        {
-                            context.Features[typeof(IRoutingFeature)] = new HostBasedRouteData(splittedUrl[0]);
-                        }
-
-                        routingFeature?.RouteData.Values.Add("Host", splittedUrl[0]);
-
-                        //foreach (System.Collections.Generic.KeyValuePair<System.Type, object> kvp in context.Features)
-                        //{
-                        //    System.Console.WriteLine(kvp.Key.FullName);
-                        //}
-
-                        // context.GetRouteData().Values["controller"] = "test";
-                        */
-                    } // End if (splittedUrl != null && (splittedUrl.Length > 0)) 
-
-
-                    // if (splittedUrl != null && (splittedUrl.Length > 0 && splittedUrl[0] == "admin"))
-                    // {
-                    //     context.GetRouteData().Values.Add("area", "Admin");
-                    // }
-
-
-                    // Call the next delegate/middleware in the pipeline
-                    await next();
-                }
-            );
-
-
 
 
             DefaultFilesOptions dfo = new DefaultFilesOptions();
@@ -196,6 +121,7 @@ https://stackoverflow.com/questions/29863064/haproxy-dynamic-acl
             dfo.DefaultFileNames.Add("index.html");
 
             app.UseDefaultFiles(dfo);
+
 
             app.UseStaticFiles(
                 new Microsoft.AspNetCore.Builder.StaticFileOptions()
@@ -246,6 +172,34 @@ https://stackoverflow.com/questions/29863064/haproxy-dynamic-acl
             // app.UseCookiePolicy();
 
             app.UseRouting();
+
+
+
+            // https://stackoverflow.com/questions/60791843/changing-routedata-in-asp-net-core-3-1-in-middleware
+            // Note: Sequence matters ! After app.UseRouting, but before app.UseEndpoints
+            app.Use(
+                async delegate (Microsoft.AspNetCore.Http.HttpContext context, System.Func<System.Threading.Tasks.Task> next)
+                {
+                    string url = context.Request.Headers["HOST"];
+                    string[] splittedUrl = url.Split('.');
+
+                    if (splittedUrl != null && (splittedUrl.Length > 0))
+                    {
+                        context.GetRouteData().Values.Add("Host", splittedUrl[0]);
+                        context.Items["Host2"] = splittedUrl[0];
+
+                        //foreach (System.Collections.Generic.KeyValuePair<System.Type, object> kvp in context.Features)
+                        //{
+                        //    System.Console.WriteLine(kvp.Key.FullName);
+                        //}
+
+                    } // End if (splittedUrl != null && (splittedUrl.Length > 0)) 
+
+                    // Call the next delegate/middleware in the pipeline
+                    await next();
+                }
+            );
+
 
             app.UseAuthorization();
 

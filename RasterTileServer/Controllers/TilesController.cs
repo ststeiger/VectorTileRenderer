@@ -92,7 +92,7 @@ namespace RasterTileServer.Controllers
             // bd = System.IO.Path.Combine(bd, "..", "..", "..");
             // bd = System.IO.Path.GetFullPath(bd);
             // bd = System.IO.Path.Combine(bd, "wwwroot");
-            // bd = System.IO.Path.Combine(bd, "meer.png");
+            // bd = System.IO.Path.Combine(bd, "sea.png");
 
             // byte[] ba = System.IO.File.ReadAllBytes(bd);
             // byte[] ba = ba = System.Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEWq09/P7Lz1AAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg==");
@@ -129,19 +129,12 @@ namespace RasterTileServer.Controllers
         {
             y = FromTmsY(y, z);
 
-            var host = this.RouteData.Values["Host"];
-            System.Console.WriteLine(host);
-
-
             System.IO.Stream stream = await GetTileStream(x, y, z);
             if (stream == null)
             {
                 Response.StatusCode = 404;
                 return null;
             }
-
-
-
 
 
             Response.StatusCode = 200;
