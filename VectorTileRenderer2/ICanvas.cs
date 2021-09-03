@@ -17,7 +17,7 @@ namespace VectorTileRenderer
 
         void DrawPoint(Point geometry, Brush style);
 
-        void DrawText(Point geometry, Brush style);
+        void DrawText(Point geometry, Brush style, System.Collections.Generic.Dictionary<string, object> attributesDict);
 
         void DrawTextOnPath(System.Collections.Generic.List<Point> geometry, Brush style);
 

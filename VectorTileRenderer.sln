@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMinePortable", "ColorM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RasterTileServer", "RasterTileServer\RasterTileServer.csproj", "{0C819276-6DDB-49A2-8F39-913D349D49E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorMine", "ColorMine\ColorMine.csproj", "{F9686084-62AB-41A9-95A6-02C72FECCAEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorMine", "ColorMine\ColorMine.csproj", "{F9686084-62AB-41A9-95A6-02C72FECCAEF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Typography.OpenFont", "Typography.OpenFont\Typography.OpenFont.csproj", "{0DA048B6-45A3-4D2E-84AB-152A1AF2F80A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{F9686084-62AB-41A9-95A6-02C72FECCAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9686084-62AB-41A9-95A6-02C72FECCAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9686084-62AB-41A9-95A6-02C72FECCAEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DA048B6-45A3-4D2E-84AB-152A1AF2F80A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA048B6-45A3-4D2E-84AB-152A1AF2F80A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA048B6-45A3-4D2E-84AB-152A1AF2F80A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA048B6-45A3-4D2E-84AB-152A1AF2F80A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

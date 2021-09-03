@@ -1,27 +1,79 @@
 ﻿
-https://corona-blog.net/2021/09/01/jens-spahn-wenn-wir-geschuetzte-menschen-auch-genauso-testen-wie-ungeschuetzte-dann-hoert-diese-pandemie-nie-auf/
-
-
 https://github.com/googlefonts/noto-fonts/issues/13
+
+To expand on Thaths comments, there are some technical limitations on how many 
+characters (more accurately glyphs) can be in one font. There are also 
+limitations on merging scripts that have metrics that aren't really compatible 
+(line heights and such). That will limit the extent to which we can merge the 
+scripts into larger groupings.
+
+
+Another reason why a single font resource cannot be used is because all modern 
+font formats, such as TrueType and OpenType, limit the number of glyphs to 64K. 
+Unicode currently includes well over 100K characters, meaning that multiple 
+font resources are a necessity. Also, and in my nearly 25 years of font 
+development experience, it is best to include glyphs for related scripts in a 
+single font resources. Such fonts tend to work better in a broader set of 
+environments.
+
+
+https://docs.microsoft.com/en-us/dotnet/api/system.windows.media.textformatting.textrun?view=net-5.0
+TextRun:        Root of the hierarchy. Defines a group of characters that share the same set of character properties.
+TextCharacters: Defines a collection of character glyphs from a distinct physical typeface.
+
+
+
+https://localhost:44305/tiles/7940/6541/14.png?lang=en&no_cache=1630671597883
+https://localhost:44305/tiles/15892/12946/15.png?lang=en&no_cache=1630672015619
+
+
+
+gl._glMap.setLayoutProperty(keys[i], 'text-field', ["coalesce", ["get", "name:ru"], ["get", "name:latin"], ["get", "name:nonlatin"]]);
+
 
 
 
 foreach (VisualLayer layer in visualLayers.OrderByDescending(item => item.Brush.ZIndex))
 {
 
-    System.Collections.Generic.Dictionary<string, object> attributesDict = 
-            feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
+    System.Collections.Generic.Dictionary<string, object> attributesDict = feature.Attributes.ToDictionary(key => key.Key, value => value.Value);
 
             
-    {
-      "class": "town",
-      "name": "Douyet ⴹⵡⵢⴰⵜ الظويات",
-      "name:ar": "الظويات",
-      "name:fr": "Douyet",
-      "name:latin": "Douyet",
-      "name:nonlatin": "ⴹⵡⵢⴰⵜ الظويات",
-      "name_de": "Douyet ⴹⵡⵢⴰⵜ الظويات",
-      "name_en": "Douyet ⴹⵡⵢⴰⵜ الظويات",
-      "name_int": "Douyet",
-      "rank": 11
-    }
+{
+    "class": "town",
+    "name": "Douyet ⴹⵡⵢⴰⵜ الظويات",
+    "name:ar": "الظويات",
+    "name:fr": "Douyet",
+    "name:latin": "Douyet",
+    "name:nonlatin": "ⴹⵡⵢⴰⵜ الظويات",
+    "name_de": "Douyet ⴹⵡⵢⴰⵜ الظويات",
+    "name_en": "Douyet ⴹⵡⵢⴰⵜ الظويات",
+    "name_int": "Douyet",
+    "rank": 11
+}
+
+
+
+{
+    "class": "village",
+    "name": "Bni Leit ⴱⵏⵉ ⵍⵉⵜ بني ليت",
+    "name:ar": "بني ليت",
+    "name:fr": "Bni Leit",
+    "name:latin": "Bni Leit",
+    "name:nonlatin": "ⴱⵏⵉ ⵍⵉⵜ بني ليت",
+    "name_de": "Bni Leit ⴱⵏⵉ ⵍⵉⵜ بني ليت",
+    "name_en": "Bni Leit ⴱⵏⵉ ⵍⵉⵜ بني ليت",
+    "name_int": "Bni Leit",
+    "rank": 11
+}
+
+
+name_de
+
+name:de
+name:fr
+name:it
+name:en
+
+name:latin
+name:nonlatin

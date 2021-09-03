@@ -9,7 +9,7 @@ namespace VectorTileRenderer
 
 
 
-    public class SkiaCanvas 
+    public class SkiaCanvas
         : ICanvas, System.IDisposable
     {
         protected int width;
@@ -58,7 +58,7 @@ namespace VectorTileRenderer
 
             double padding = -5;
             clipRectangle = new Rect(padding, padding, this.width - padding * 2, this.height - padding * 2);
-            
+
             clipRectanglePath = new List<IntPoint>();
             clipRectanglePath.Add(new IntPoint((int)clipRectangle.Top, (int)clipRectangle.Left));
             clipRectanglePath.Add(new IntPoint((int)clipRectangle.Top, (int)clipRectangle.Right));
@@ -208,7 +208,7 @@ namespace VectorTileRenderer
             } // End if (ClipOverflow) 
 
             SKPath path = GetPathFromGeometry(geometry);
-            if(path == null)
+            if (path == null)
             {
                 return;
             } // End if(path == null) 
@@ -226,7 +226,7 @@ namespace VectorTileRenderer
                 IsAntialias = true,
             };
 
-            if(style.Paint.LineDashArray.Length > 0)
+            if (style.Paint.LineDashArray.Length > 0)
             {
                 SKPathEffect effect = SKPathEffect.CreateDash(style.Paint.LineDashArray.Map(n => (float)n).ToArray(), 0);
                 fillPaint.PathEffect = effect;
@@ -293,15 +293,15 @@ namespace VectorTileRenderer
 
         protected string TransformText(string text, Brush style)
         {
-            if(text.Length == 0)
+            if (text.Length == 0)
             {
                 return "";
             }
 
-            if(style.Paint.TextTransform == TextTransform.Uppercase)
+            if (style.Paint.TextTransform == TextTransform.Uppercase)
             {
                 text = text.ToUpper();
-            } 
+            }
             else if (style.Paint.TextTransform == TextTransform.Lowercase)
             {
                 text = text.ToLower();
@@ -323,15 +323,15 @@ namespace VectorTileRenderer
             {
                 long lineLength = paint.BreakText(restOfText, (float)(style.Paint.TextMaxWidth * style.Paint.TextSize));
 
-                if(lineLength == restOfText.Length)
+                if (lineLength == restOfText.Length)
                 {
                     // its the end
                     brokenText += restOfText.Trim();
                     break;
                 } // End if(lineLength == restOfText.Length) 
 
-                int lastSpaceIndex = restOfText.LastIndexOf(' ',  (int)(lineLength - 1));
-                if(lastSpaceIndex == -1 || lastSpaceIndex == 0)
+                int lastSpaceIndex = restOfText.LastIndexOf(' ', (int)(lineLength - 1));
+                if (lastSpaceIndex == -1 || lastSpaceIndex == 0)
                 {
                     // no more spaces, probably ;)
                     brokenText += restOfText.Trim();
@@ -350,9 +350,9 @@ namespace VectorTileRenderer
 
         protected bool TextCollides(Rect rectangle)
         {
-            foreach(Rect rect in textRectangles)
+            foreach (Rect rect in textRectangles)
             {
-                if(rect.IntersectsWith(rectangle))
+                if (rect.IntersectsWith(rectangle))
                 {
                     return true;
                 } // End if(rect.IntersectsWith(rectangle)) 
@@ -432,9 +432,12 @@ namespace VectorTileRenderer
         } // End Function GetFont 
 
 
-        public void DrawText(Point geometry, Brush style)
+        protected static FontManager fnt = new NotoFontManager(@"D:\Stefan.Steiger\Downloads\Noto-hinted");
+
+
+        public void DrawText(Point geometry, Brush style, System.Collections.Generic.Dictionary<string, object> attributesDict)
         {
-            if(style.Paint.TextOptional)
+            if (style.Paint.TextOptional)
             {
                 // TODO check symbol collision
                 //return;
@@ -446,7 +449,7 @@ namespace VectorTileRenderer
             string[] allLines = text.Split('\n');
 
             // detect collisions
-            if(allLines.Length > 0)
+            if (allLines.Length > 0)
             {
                 string biggestLine = allLines.OrderBy(line => line.Length).Last();
                 // byte[] bytes = System.Text.Encoding.UTF32.GetBytes(biggestLine);
@@ -454,15 +457,15 @@ namespace VectorTileRenderer
                 // int width = (int)(paint.MeasureText(bytes));
                 int width = (int)paint.MeasureText(biggestLine);
                 int left = (int)(geometry.X - width / 2);
-                int top = (int)(geometry.Y - style.Paint.TextSize/2 * allLines.Length);
+                int top = (int)(geometry.Y - style.Paint.TextSize / 2 * allLines.Length);
                 int height = (int)(style.Paint.TextSize * allLines.Length);
 
                 Rect rectangle = new Rect(left, top, width, height);
                 rectangle.Inflate(5, 5);
 
-                if(ClipOverflow)
+                if (ClipOverflow)
                 {
-                    if(!clipRectangle.Contains(rectangle))
+                    if (!clipRectangle.Contains(rectangle))
                     {
                         return;
                     } // End if(!clipRectangle.Contains(rectangle)) 
@@ -492,6 +495,9 @@ namespace VectorTileRenderer
                 //this.DrawPolygon(list, brush);
             } // End if(allLines.Length > 0) 
 
+            //   gl._glMap.setLayoutProperty(keys[i], 'text-field', ["coalesce", ["get", "name:ru"], ["get", "name:latin"], ["get", "name:nonlatin"]]);
+
+
             int i = 0;
             foreach (string line in allLines)
             {
@@ -499,11 +505,19 @@ namespace VectorTileRenderer
                 float lineOffset = (float)(i * style.Paint.TextSize) - ((float)(allLines.Length) * (float)style.Paint.TextSize) / 2 + (float)style.Paint.TextSize;
                 SKPoint position = new SKPoint((float)geometry.X + (float)(style.Paint.TextOffset.X * style.Paint.TextSize), (float)geometry.Y + (float)(style.Paint.TextOffset.Y * style.Paint.TextSize) + lineOffset);
 
+                FontInfo tf = fnt.GetBestMatchingFont(line);
+
                 if (style.Paint.TextStrokeWidth != 0)
                 {
+                    if (tf != null)
+                        strokePaint.Typeface = tf.Typeface;
+
                     canvas.DrawText(line, position, strokePaint);
                     // canvas.DrawText(bytes, position, strokePaint);
                 }
+
+                if (tf != null)
+                    paint.Typeface = fnt.GetBestMatchingFont(line).Typeface;
 
                 // canvas.DrawText(bytes, position, paint);
                 canvas.DrawText(line, position, paint);
@@ -575,7 +589,7 @@ namespace VectorTileRenderer
 
         public void DrawPoint(Point geometry, Brush style)
         {
-            if(style.Paint.IconImage != null)
+            if (style.Paint.IconImage != null)
             {
                 // draw icon here
             }
@@ -684,7 +698,7 @@ namespace VectorTileRenderer
         public byte[] FinishDrawing()
         {
             byte[] pngBytes = null;
-            
+
             using (SKData skd = this.bitmap.Encode(SKEncodedImageFormat.Png, 100))
             {
                 pngBytes = skd.ToArray();

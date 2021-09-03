@@ -391,7 +391,7 @@ namespace VectorTileRenderer
                         {
                             if (brush.Text != null)
                             {
-                                canvas.DrawText(point.First(), brush);
+                                canvas.DrawText(point.First(), brush, attributesDict);
                             }
                         }
                     }

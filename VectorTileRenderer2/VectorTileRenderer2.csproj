@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ColorMine\ColorMine.csproj" />
     <ProjectReference Include="..\Mapbox.VectorTile\Mapbox.VectorTile.csproj" />
+    <ProjectReference Include="..\Typography.OpenFont\Typography.OpenFont.csproj" />
   </ItemGroup>
 
 </Project>
