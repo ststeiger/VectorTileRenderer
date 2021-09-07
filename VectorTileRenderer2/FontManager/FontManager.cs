@@ -232,7 +232,7 @@ namespace VectorTileRenderer
         } // End Function FontSupportsString 
 
 
-        public virtual FontInfo GetBestMatchingFont(string text)
+        public virtual FontInfo GetBestMatchingFont(ref string text)
         {
             foreach (FontInfo tf in this.FontList)
             {
@@ -240,7 +240,50 @@ namespace VectorTileRenderer
                     return tf;
             } // Next tf 
 
-            return null;
+            // in this case, the string is composed of multiple languages
+            // (or belongs to a language for which we don't have a font, so it couldn't be found.)
+            // Now to solve the multi-language debacle, do the following: 
+            // split the string by whitespace, takes the result of first split,
+            // and concatenate all remaing split-results if they match the same font. 
+            // Override the text to be rendered with the concatenation. 
+            // To accomplish that, we have to use call-by-reference for argument text
+            string[] allWords = text.Split(' ');
+
+            if (allWords == null || allWords.Length < 1)
+                return null; // No font that supports this charset 
+
+            string newText = "";
+
+            foreach (FontInfo tf in this.FontList)
+            {
+                if (FontSupportsString(tf.OpenFont, allWords[0]))
+                {
+                    newText = allWords[0];
+
+                    if (allWords.Length > 1)
+                    {
+                        for (int i = 1; i < allWords.Length; ++i)
+                        {
+                            if (FontSupportsString(tf.OpenFont, allWords[i]))
+                                newText += " " + allWords[i];
+                            else
+                                break;
+                        } // Next i 
+
+                    } // End if (allWords.Length > 1) 
+
+                    text = newText;
+                    return tf;
+                } // End if (FontSupportsString(tf.OpenFont, allWords[0])) 
+
+            } // Next tf 
+
+            // TODO: 
+            // Create ScriptRuns from Text, and return list of ScriptRuns 
+            // then handle drawing each ScriptRun 
+            // that way, there can be multiple writing systems (scripts) in each line. 
+
+            return null; // No font that supports this charset 
         } // End Function GetBestMatchingFont 
 
 

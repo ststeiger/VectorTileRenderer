@@ -498,14 +498,15 @@ namespace VectorTileRenderer
             //   gl._glMap.setLayoutProperty(keys[i], 'text-field', ["coalesce", ["get", "name:ru"], ["get", "name:latin"], ["get", "name:nonlatin"]]);
 
 
-            int i = 0;
-            foreach (string line in allLines)
+            for(int i = 0; i < allLines.Length; ++i)
             {
+                string line = allLines[i];
+
                 // byte[] bytes = System.Text.Encoding.UTF32.GetBytes(line);
                 float lineOffset = (float)(i * style.Paint.TextSize) - ((float)(allLines.Length) * (float)style.Paint.TextSize) / 2 + (float)style.Paint.TextSize;
                 SKPoint position = new SKPoint((float)geometry.X + (float)(style.Paint.TextOffset.X * style.Paint.TextSize), (float)geometry.Y + (float)(style.Paint.TextOffset.Y * style.Paint.TextSize) + lineOffset);
 
-                FontInfo tf = fnt.GetBestMatchingFont(line);
+                FontInfo tf = fnt.GetBestMatchingFont(ref line);
 
                 if (style.Paint.TextStrokeWidth != 0)
                 {
@@ -517,11 +518,10 @@ namespace VectorTileRenderer
                 }
 
                 if (tf != null)
-                    paint.Typeface = fnt.GetBestMatchingFont(line).Typeface;
+                    paint.Typeface = fnt.GetBestMatchingFont(ref line).Typeface;
 
                 // canvas.DrawText(bytes, position, paint);
                 canvas.DrawText(line, position, paint);
-                i++;
             } // Next line 
 
         } // End Sub DrawText 
