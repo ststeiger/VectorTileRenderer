@@ -1,0 +1,51 @@
+
+https://wiki.openstreetmap.org/wiki/Planet.osm
+It's a big file (on 2021-09-01, the plain OSM XML variant takes over 1478.9 GB 
+when uncompressed from the 107.4 GB bzip2-compressed 
+or 59.5 GB PBF-compressed
+
+
+
+https://help.openstreetmap.org/questions/52789/how-much-disk-space-do-i-need-to-import-planetosm-into-openstreetmap-database
+
+
+I guess you will need about 3 TB of disk space and and it will take about 2 weeks.
+
+In order to get a more reliable estimate, run the import with a small(er) extract first. 
+The australia-oceania.osm.pbf from download.geofabrik.de is a nice test case 
+because it is roughly 1/100 of the planet, so import that and multiply the numbers by 100.
+
+You don't want to import the planet with osmosis into an "apidb" database. 
+That database schema is not useful for rendering, most analysis, routing, 
+or anything except hosting OpenStreetMap data to be edited.
+
+
+If you decide to do this, it will depend on your disks. 
+If using 7200 RPM hard drives, expect it to take 1-3 months. 
+I did this a few years ago when the planet was smaller and it took about a month.
+
+I just did a fresh import, but using osm2pgsql, 
+size with slim tables: 558G (on a SSD Samsung 850 pro 1To). 
+Took 38hours. (1.58 days)
+
+
+
+https://gis.stackexchange.com/questions/314345/size-expectations-of-osm-in-postgis
+. And at least for osm2pgsql, you also have the option to store the nodes table 
+outside your database (--flat-nodes option), 
+but I don't know about osmosis, I have never used it.
+
+
+Well, depending on your needs and the schema you use, 
+you could indeed face 2TB storage requirements for the whole planet 
+(but not necessarily...). And OSM data is growing steadily each year, 
+so factor that in as well.
+
+
+
+
+
+https://wiki.openstreetmap.org/wiki/Component_overview
+https://www.volkerschatz.com/net/osm/osm2pgsql-usage.html
+https://cartographicperspectives.org/index.php/journal/article/view/73/138
+
