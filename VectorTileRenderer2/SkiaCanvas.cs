@@ -432,7 +432,17 @@ namespace VectorTileRenderer
         } // End Function GetFont 
 
 
-        protected static FontManager fnt = new NotoFontManager(@"D:\Stefan.Steiger\Downloads\Noto-hinted");
+
+        private static FontManager GetFontManager()
+        {
+            if("COR".Equals(System.Environment.UserDomainName, System.StringComparison.InvariantCultureIgnoreCase))
+                return new NotoFontManager(@"D:\username\Downloads\Noto-hinted");
+
+            return new NotoFontManager(@"C:\Users\User\Downloads\fonts\Noto-hinted");
+        }
+
+
+        protected static FontManager fnt = GetFontManager();
 
 
         public void DrawText(Point geometry, Brush style, System.Collections.Generic.Dictionary<string, object> attributesDict)

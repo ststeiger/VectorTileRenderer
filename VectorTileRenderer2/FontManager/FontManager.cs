@@ -206,7 +206,22 @@ namespace VectorTileRenderer
                     next_codepoint = 0;
                 }
 
-                ushort glyphIndex = tf.GetGlyphIndex(cur_codepoint, next_codepoint, out bool skipNextCodepoint);
+                ushort glyphIndex = 0;
+                bool skipNextCodepoint;
+                try
+                {
+                    // ushort glyphIndex = tf.GetGlyphIndex(cur_codepoint, next_codepoint, out bool skipNextCodepoint);
+                    glyphIndex = tf.GetGlyphIndex(cur_codepoint, next_codepoint, out skipNextCodepoint);
+                }
+                catch (System.Exception ex)
+                {
+                    System.Console.WriteLine(ex.Message);
+                    System.Console.WriteLine(ex.StackTrace);
+                    ushort myGlyphIndex = tf.GetGlyphIndex(cur_codepoint, next_codepoint, out bool skipNextCodepoin1t);
+                    System.Console.WriteLine(myGlyphIndex);
+                    return false;
+                }
+                
 
                 if (glyphIndex == 0) // && _glyphNotFoundHandler != null)
                 {
